@@ -23,6 +23,8 @@ public class Users {
 	
 	private String password;
 	
+	private String email;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "role_id", nullable = false)
 	private Role role;
