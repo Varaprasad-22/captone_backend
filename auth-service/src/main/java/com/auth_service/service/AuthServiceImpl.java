@@ -19,6 +19,7 @@ public class AuthServiceImpl implements AuthService {
     private  UserRepository userRepository;
     @Autowired
 	private  RoleRepository roleRepository;
+    @Autowired
     private  PasswordEncoder passwordEncoder;
 
     public void register(RegisterRequest request) {
