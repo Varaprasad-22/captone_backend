@@ -8,6 +8,7 @@
   <description>Capstone project on Smart_Ticket_And_Issue_Management_System</description>
   <modules>
   	<module>eureka-server</module>
+  	<module>auth-service</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>
