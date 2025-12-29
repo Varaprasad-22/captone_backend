@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.auth_service.dto.AdminCreationRequest;
 import com.auth_service.dto.LoginRequest;
 import com.auth_service.dto.RegisterRequest;
+import com.auth_service.model.Erole;
 import com.auth_service.model.Role;
 import com.auth_service.model.Users;
 import com.auth_service.repository.RoleRepository;
@@ -28,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("User already exists");
         }
 
-        Role role = roleRepository.findByName(request.getRole())
+        Role role = roleRepository.findByName(Erole.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         Users user = new Users();
@@ -53,6 +55,29 @@ public class AuthServiceImpl implements AuthService {
 
         return user;
     }
+    
+    
+    public void adminCreateUser(AdminCreationRequest request) {
 
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("User already exists");
+        }
+        if (request.getRole() == Erole.ROLE_ADMIN) {
+            throw new RuntimeException("Cannot create ADMIN users");
+        }
+
+        Role role = roleRepository.findByName(request.getRole())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        Users user = new Users();
+        user.setUserId(UUID.randomUUID().toString());
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(role);
+        user.setActive(true);
+
+        userRepository.save(user);
+    }
 
 }

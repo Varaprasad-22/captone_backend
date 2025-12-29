@@ -9,5 +9,5 @@ public class RegisterRequest {
     private String name;
     private String email;
     private String password;
-    private Erole role;
+//    private Erole role;
 }
