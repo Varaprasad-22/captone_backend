@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 import com.auth_service.dto.AdminCreationRequest;
 import com.auth_service.dto.AllUsersResponse;
 import com.auth_service.dto.LoginRequest;
+import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.RegisterRequest;
 import com.auth_service.model.Erole;
 import com.auth_service.model.Role;
 import com.auth_service.model.Users;
 import com.auth_service.repository.RoleRepository;
 import com.auth_service.repository.UserRepository;
+import com.auth_service.security.JwtUtil;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -25,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
 	private RoleRepository roleRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private JwtUtil jwtutils;
 
 	public void register(RegisterRequest request) {
 
@@ -46,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
 		userRepository.save(user);
 	}
 
-	public Users login(LoginRequest request) {
+	public LoginResponse login(LoginRequest request) {
 
 		Users user = userRepository.findByEmail(request.getEmail())
 				.orElseThrow(() -> new RuntimeException("Invalid credentials"));
@@ -55,7 +59,8 @@ public class AuthServiceImpl implements AuthService {
 			throw new RuntimeException("Invalid credentials");
 		}
 
-		return user;
+		String token =jwtutils.generateToken(user.getUserId(), user.getRole().getName().name(),user.getName(),user.getEmail());
+		return new LoginResponse(token);
 	}
 
 	public void adminCreateUser(AdminCreationRequest request) {

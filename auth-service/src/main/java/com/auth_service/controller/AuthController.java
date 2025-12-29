@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth_service.dto.AdminCreationRequest;
 import com.auth_service.dto.AllUsersResponse;
 import com.auth_service.dto.LoginRequest;
+import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.RegisterRequest;
 import com.auth_service.service.AuthService;
 
@@ -32,9 +33,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request) {
-		authService.login(request);
-		return ResponseEntity.ok("Login successful");
+	public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+		LoginResponse response=authService.login(request);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/admin/register")

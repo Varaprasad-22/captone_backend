@@ -7,13 +7,14 @@ import org.jspecify.annotations.Nullable;
 import com.auth_service.dto.AdminCreationRequest;
 import com.auth_service.dto.AllUsersResponse;
 import com.auth_service.dto.LoginRequest;
+import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.RegisterRequest;
 import com.auth_service.model.Users;
 
 public interface AuthService {
 	void register(RegisterRequest request);
 
-	Users login(LoginRequest request);
+	LoginResponse login(LoginRequest request);
 
 	void adminCreateUser(AdminCreationRequest request);
 
