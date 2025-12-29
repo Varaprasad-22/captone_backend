@@ -1,0 +1,14 @@
+# Build output
+target/
+
+# Eclipse/STS specific
+.settings/
+.project
+.classpath
+bin/
+
+# Environment files (sensitive info)
+.env
+*.log
+
+.mvn/wrapper/maven-wrapper.jar
