@@ -12,3 +12,6 @@ bin/
 *.log
 
 .mvn/wrapper/maven-wrapper.jar
+
+# ignore storage folder inside ticket-service
+ticket-service/storage/

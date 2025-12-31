@@ -22,7 +22,9 @@ public class TicketServiceImpl implements TickerService{
 
 	@Autowired
 	private TicketRepository ticketRepository;
+	@Autowired
 	private FileStorageService fileStorageService;
+	@Autowired
 	private AttachmentRepository attachmentRepository;
 	@Override
 	public String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId) {
