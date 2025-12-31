@@ -32,6 +32,6 @@ public class TicketController {
 			@Valid @RequestBody CreateTicketRequest request,
 			@RequestPart(value = "files", required = false) List<MultipartFile> files) {
 		String ticketId = ticketService.createTicket(request,files, userId);
-		return ResponseEntity.status(HttpStatus.CREATED).body("Ticket Created" + ticketId);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ticketId);
 	}
 }

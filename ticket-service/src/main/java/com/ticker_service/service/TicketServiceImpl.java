@@ -12,6 +12,7 @@ import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.model.Attachment;
 import com.ticker_service.model.Ticket;
 import com.ticker_service.model.TicketStatus;
+import com.ticker_service.repository.AttachmentRepository;
 import com.ticker_service.repository.TicketRepository;
 
 import jakarta.validation.Valid;
@@ -21,6 +22,8 @@ public class TicketServiceImpl implements TickerService{
 
 	@Autowired
 	private TicketRepository ticketRepository;
+	private FileStorageService fileStorageService;
+	private AttachmentRepository attachmentRepository;
 	@Override
 	public String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId) {
 		Ticket ticket=new Ticket();
@@ -41,10 +44,20 @@ public class TicketServiceImpl implements TickerService{
         	for(MultipartFile file:files) {
         		if(file.isEmpty())
         			continue;
-        		
+        		String path=fileStorageService.save(file);
+        		Attachment attach=new Attachment();
+        		attach.setFileName(file.getOriginalFilename());
+        		attach.setTicketId(saved.getTicketId());
+        		attach.setFileType(file.getContentType());
+        		attach.setFileUrl(path);
+        		attach.setUploadedBy(userId);
+        		attach.setUploadedAt(LocalDateTime.now());
+        		attachments.add(attach);
         	}
+            if (!attachments.isEmpty()) 
+            	attachmentRepository.saveAll(attachments);
         }
-		return null;
+		return "Ticket Created Succesfully"+saved.getTicketId();
 	}
 
 }
