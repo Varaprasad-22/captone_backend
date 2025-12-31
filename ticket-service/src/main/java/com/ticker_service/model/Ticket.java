@@ -22,7 +22,7 @@ public class Ticket {
 
 	private String priority;
 
-	private String status;
+	private TicketStatus status;
 
 	private String createdByUserId;
 

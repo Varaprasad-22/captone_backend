@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.model.Ticket;
+import com.ticker_service.model.TicketStatus;
 import com.ticker_service.repository.TicketRepository;
 
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class TicketServiceImpl implements TickerService{
 		ticket.setDescription(request.getDescription());
 		ticket.setCategory(request.getCategory());
 		ticket.setPriority("Low");
-		ticket.setStatus("OPEN");
+		ticket.setStatus(TicketStatus.OPEN);
         ticket.setCreatedByUserId(userId);
         ticket.setCreatedAt(LocalDateTime.now());
         ticket.setUpdatedAt(LocalDateTime.now());
