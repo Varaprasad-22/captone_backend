@@ -1,5 +1,31 @@
 package com.assignmentService.model;
 
-public class Assignment {
+import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.Id;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "assignments")
+public class Assignment {
+	@Id
+	private String assignmentId;
+
+	private String ticketId;
+
+	private String agentId;
+	private String assignedBy;
+	private LocalDateTime assignedAt;
+	private String priority;
+	private String status;
 }

@@ -2,6 +2,8 @@ package com.assignmentService.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AssignmentRepository extends JpaRepository<T, ID>{
+import com.assignmentService.model.Assignment;
+
+public interface AssignmentRepository extends JpaRepository<Assignment, String>{
 
 }
