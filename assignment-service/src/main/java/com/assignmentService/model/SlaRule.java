@@ -1,38 +1,30 @@
 package com.assignmentService.model;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.annotation.Id;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "sla_rules")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Table(name = "assignments")
-public class Assignment {
-	@Id
-	private String assignmentId;
+public class SlaRule {
 
-	private String ticketId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ruleId;
 
-	private String agentId;
-	private String assignedBy;
-	private LocalDateTime assignedAt;
-	
     @Enumerated(EnumType.STRING)
+    @Column(unique = true)
     private Priority priority;
 
-	
-	
-	private String status;
+    private int responseMinutes;
+    private int resolutionHours;
+    private boolean active;
 }
