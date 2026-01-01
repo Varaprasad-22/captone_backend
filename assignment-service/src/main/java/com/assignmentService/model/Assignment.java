@@ -33,6 +33,6 @@ public class Assignment {
     private Priority priority;
 
 	
-	
-	private String status;
+    @Enumerated(EnumType.STRING)
+	private SlaStatus status=SlaStatus.ACTIVE;
 }

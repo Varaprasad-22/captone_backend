@@ -2,11 +2,15 @@ package com.assignmentService.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.assignmentService.model.Assignment;
 import com.assignmentService.model.Sla;
+import com.assignmentService.model.SlaStatus;
+import com.assignmentService.repositories.AssignmentRepository;
 import com.assignmentService.repositories.SlaRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +20,9 @@ import lombok.RequiredArgsConstructor;
 @EnableScheduling
 public class SlaSchedular {
 
+	@Autowired
     private final SlaRepository slaRepo;
+    private AssignmentRepository assignmentRepo;
 //	runs every 60 secs timer
 	//see this one aims so if not responded within response time it shows of escalation
 	//if not resolved with in time it shows breached
@@ -37,7 +43,10 @@ public class SlaSchedular {
                     && now.isAfter(sla.getResponseDeadline())) {
 
                 sla.setEscalated(true);
+                
                 updated = true;
+                
+                updateAssignment(sla.getAssignmentId(),SlaStatus.ESCALATED);
             }
 
 
@@ -47,6 +56,8 @@ public class SlaSchedular {
 
                 sla.setBreached(true);
                 updated = true;
+
+                updateAssignment(sla.getAssignmentId(),SlaStatus.BREACHED);
             }
 
 //            prevent unnecesary db writes per minute
@@ -54,5 +65,12 @@ public class SlaSchedular {
                 slaRepo.save(sla);
             }
         }
+    }
+    
+    private void updateAssignment(String assignId,SlaStatus status) {
+    	Assignment assignment=assignmentRepo.findById(assignId).orElseThrow(()->new RuntimeException("Failed to find assignment"));
+    	assignment.setStatus(status);
+    	assignmentRepo.save(assignment);
+    	
     }
 }
