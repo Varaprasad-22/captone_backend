@@ -17,6 +17,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	@Autowired
 	private AssignmentRepository assignmentRepo;
+	@Autowired
+	private SlaService slaService;
 
 	@Transactional
 	public String assign(AssignmentRequest req, String assignedBy) {
@@ -32,7 +34,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 		Assignment saved = assignmentRepo.save(assign);
 
-		
+
+        slaService.createSla(saved);
 		
 		return assign.getAssignmentId();
 	}

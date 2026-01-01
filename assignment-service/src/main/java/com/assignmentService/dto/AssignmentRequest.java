@@ -1,5 +1,9 @@
 package com.assignmentService.dto;
 
+import com.assignmentService.model.Priority;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,5 +21,5 @@ public class AssignmentRequest {
 	private String agentId;
 
 	@NotBlank
-	private String priority; // HIGH / MEDIUM / LOW
+    private Priority priority; // HIGH / MEDIUM / LOW
 }
