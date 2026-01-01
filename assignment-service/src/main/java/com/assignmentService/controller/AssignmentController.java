@@ -1,5 +1,6 @@
 package com.assignmentService.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,8 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/assignments")
 public class AssignmentController {
-
+	
+	@Autowired
 	private AssignmentService assignmentService;
 
 	@PostMapping("/assign")
