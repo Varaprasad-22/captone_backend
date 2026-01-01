@@ -9,6 +9,7 @@ import com.auth_service.dto.AllUsersResponse;
 import com.auth_service.dto.LoginRequest;
 import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.RegisterRequest;
+import com.auth_service.dto.UserInfoResponse;
 import com.auth_service.model.Users;
 
 public interface AuthService {
@@ -19,4 +20,6 @@ public interface AuthService {
 	void adminCreateUser(AdminCreationRequest request);
 
 	List<AllUsersResponse> getAllUsers();
+
+	UserInfoResponse getUsersById(String userId);
 }

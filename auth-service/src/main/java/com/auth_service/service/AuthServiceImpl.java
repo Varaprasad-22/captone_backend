@@ -13,6 +13,7 @@ import com.auth_service.dto.LoginRequest;
 import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.NotificationEvent;
 import com.auth_service.dto.RegisterRequest;
+import com.auth_service.dto.UserInfoResponse;
 import com.auth_service.model.Erole;
 import com.auth_service.model.Role;
 import com.auth_service.model.Users;
@@ -104,6 +105,14 @@ public class AuthServiceImpl implements AuthService {
 	public List<AllUsersResponse> getAllUsers() {
 		return userRepository.findAll().stream().map(user -> new AllUsersResponse(user.getUserId(), user.getName(),
 				user.getEmail(), user.getRole().getName(), user.isActive())).toList();
+	}
+
+	@Override
+	public UserInfoResponse getUsersById(String userId) {
+		// TODO Auto-generated method stub
+		Users user=userRepository.findById(userId).orElseThrow(()->new RuntimeException("No USer FOund"));
+		
+		return new UserInfoResponse(user.getUserId(), user.getEmail(), user.getName(), user.getRole().getName());
 	}
 
 }
