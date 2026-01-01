@@ -66,7 +66,7 @@ public class TicketServiceImpl implements TickerService {
 		}
 
 		NotificationEvent event = new NotificationEvent("TICKET_CREATED", userEmail, "Ticket Created",
-				"Ticket '" + ticket.getTitle() + "' has been created.");
+				"Ticket '" + ticket.getTitle() + "' has been created."+ "\n With the ticket id as "+saved.getTicketId());
 
 		publisher.publish(event, "ticket.created");
 		return "Ticket Created Succesfully" + saved.getTicketId();
