@@ -10,6 +10,6 @@ import jakarta.validation.Valid;
 
 public interface TickerService {
 
-	String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId);
+	String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId, String userEmail);
 
 }
