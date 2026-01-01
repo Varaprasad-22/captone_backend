@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.assignmentService.dto.NotificationEvent;
 import com.assignmentService.model.Assignment;
 import com.assignmentService.model.Sla;
 import com.assignmentService.model.SlaStatus;
@@ -20,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 @EnableScheduling
 public class SlaSchedular {
 
-	@Autowired
     private final SlaRepository slaRepo;
-    private AssignmentRepository assignmentRepo;
+    private final AssignmentRepository assignmentRepo;
+    private final NotificationPublisher publisher;
 //	runs every 60 secs timer
 	//see this one aims so if not responded within response time it shows of escalation
 	//if not resolved with in time it shows breached
@@ -62,6 +63,21 @@ public class SlaSchedular {
 
 //            prevent unnecesary db writes per minute
             if (updated) {
+            	NotificationEvent event = new NotificationEvent(
+            	        "SLA_ESCALATED",
+            	        "virupavaraprasad22@gmail.com",
+            	        "SLA Escalation",
+            	        "Ticket " + sla.getTicketId() + " SLA breached"
+            	);
+            	if(updated) {
+            		if(sla.isBreached()) {
+            			publisher.publish(event, "sla.breached");
+            		}
+            		if(sla.isEscalated()) {
+            			publisher.publish(event, "sla.escalated");
+            		}
+            	}
+            	
                 slaRepo.save(sla);
             }
         }
