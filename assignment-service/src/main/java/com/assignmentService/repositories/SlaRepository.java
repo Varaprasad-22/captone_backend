@@ -11,4 +11,6 @@ public interface SlaRepository extends JpaRepository<Sla, Long>{
 
 	Sla[] findByBreachedFalse();
 
+	Sla[] findActiveSlas();
+
 }

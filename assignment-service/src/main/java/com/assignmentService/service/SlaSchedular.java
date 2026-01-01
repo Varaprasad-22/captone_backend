@@ -21,18 +21,20 @@ import lombok.RequiredArgsConstructor;
 @EnableScheduling
 public class SlaSchedular {
 
-    private final SlaRepository slaRepo;
-    private final AssignmentRepository assignmentRepo;
-    private final NotificationPublisher publisher;
+	private final SlaRepository slaRepo;
+	private final AssignmentRepository assignmentRepo;
+	private final NotificationPublisher publisher;
+
 //	runs every 60 secs timer
-	//see this one aims so if not responded within response time it shows of escalation
-	//if not resolved with in time it shows breached
-    @Scheduled(fixedRate = 60000)
+	// see this one aims so if not responded within response time it shows of
+	// escalation
+	// if not resolved with in time it shows breached
+	@Scheduled(fixedRate = 60000)
     public void checkBreaches() {
 
         LocalDateTime now = LocalDateTime.now();
 
-        for (Sla sla : slaRepo.findByBreachedFalse()) {
+        for (Sla sla :slaRepo.findActiveSlas()) {
 
             boolean updated = false;
 
@@ -63,30 +65,35 @@ public class SlaSchedular {
 
 //            prevent unnecesary db writes per minute
             if (updated) {
-            	NotificationEvent event = new NotificationEvent(
-            	        "SLA_ESCALATED",
-            	        "virupavaraprasad22@gmail.com",
-            	        "SLA Escalation",
-            	        "Ticket " + sla.getTicketId() + " SLA breached"
-            	);
-            	if(updated) {
+
             		if(sla.isBreached()) {
-            			publisher.publish(event, "sla.breached");
+            			publisher.publish(new NotificationEvent(
+                    	        "SLA_BREACHED",
+                    	        "virupavaraprasad22@gmail.com",
+                    	        "SLA Breached",
+                    	        "Ticket " + sla.getTicketId() + " SLA Breached"
+                    	), "sla.breached");
             		}
             		if(sla.isEscalated()) {
-            			publisher.publish(event, "sla.escalated");
+            			publisher.publish(new NotificationEvent(
+                    	        "SLA_ESCALATED",
+                    	        "virupavaraprasad22@gmail.com",
+                    	        "SLA Escalation",
+                    	        "Ticket " + sla.getTicketId() + " SLA escalated"
+                    	), "sla.escalated");
             		}
-            	}
+            
             	
                 slaRepo.save(sla);
             }
         }
     }
-    
-    private void updateAssignment(String assignId,SlaStatus status) {
-    	Assignment assignment=assignmentRepo.findById(assignId).orElseThrow(()->new RuntimeException("Failed to find assignment"));
-    	assignment.setStatus(status);
-    	assignmentRepo.save(assignment);
-    	
-    }
+
+	private void updateAssignment(String assignId, SlaStatus status) {
+		Assignment assignment = assignmentRepo.findById(assignId)
+				.orElseThrow(() -> new RuntimeException("Failed to find assignment"));
+		assignment.setStatus(status);
+		assignmentRepo.save(assignment);
+
+	}
 }
