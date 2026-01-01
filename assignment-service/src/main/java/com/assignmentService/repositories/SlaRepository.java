@@ -8,6 +8,7 @@ import com.assignmentService.model.Sla;
 @Repository
 public interface SlaRepository extends JpaRepository<Sla, Long>{
 
-	Sla[] findActiveSlas();
+
+	Sla[] findByBreachedFalse();
 
 }

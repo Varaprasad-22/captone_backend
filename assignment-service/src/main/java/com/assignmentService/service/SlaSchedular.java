@@ -17,23 +17,42 @@ import lombok.RequiredArgsConstructor;
 public class SlaSchedular {
 
     private final SlaRepository slaRepo;
-
+//	runs every 60 secs timer
+	//see this one aims so if not responded within response time it shows of escalation
+	//if not resolved with in time it shows breached
     @Scheduled(fixedRate = 60000)
     public void checkBreaches() {
 
-        for (Sla sla : slaRepo.findActiveSlas()) {
+        LocalDateTime now = LocalDateTime.now();
 
-            if (sla.getRespondedAt() == null &&
-                LocalDateTime.now().isAfter(sla.getResponseDeadline())) {
+        for (Sla sla : slaRepo.findByBreachedFalse()) {
+
+            boolean updated = false;
+
+//            see it checks only for escalations
+//            like if not escalated already 
+//            no response,response crosssed
+            if (!sla.isEscalated()
+                    && sla.getRespondedAt() == null
+                    && now.isAfter(sla.getResponseDeadline())) {
+
                 sla.setEscalated(true);
+                updated = true;
             }
 
-            if (sla.getResolvedAt() == null &&
-                LocalDateTime.now().isAfter(sla.getResolutionDeadline())) {
+
+//            breach checks like not resolved and dead line crossed even if escalaton true also
+            if (sla.getResolvedAt() == null
+                    && now.isAfter(sla.getResolutionDeadline())) {
+
                 sla.setBreached(true);
+                updated = true;
             }
 
-            slaRepo.save(sla);
+//            prevent unnecesary db writes per minute
+            if (updated) {
+                slaRepo.save(sla);
+            }
         }
     }
 }
