@@ -20,6 +20,5 @@ public class AssignmentRequest {
 	@NotBlank
 	private String agentId;
 
-	@NotBlank
     private Priority priority; // HIGH / MEDIUM / LOW
 }
