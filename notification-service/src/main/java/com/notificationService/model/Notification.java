@@ -21,6 +21,7 @@ public class Notification {
 
 	// see this thing stores all details of for what perpose or from which service
 	// like if userCreated ,Tickets, assignments things
+	// USER_CREATED, TICKET_CREATED, ASSIGNED, SLA_ESCALATED
 	private String eventType;
 
 	private String recipientEmail;
@@ -30,7 +31,7 @@ public class Notification {
 	@Column(columnDefinition = "TEXT")
 	private String message;
 
-	// it is for defining the failed or sent things
+	// it is for defining the failed or sent things 
 	private String status;
 
 	@Column(columnDefinition = "TEXT")
