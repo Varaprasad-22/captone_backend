@@ -11,6 +11,7 @@ import com.auth_service.dto.AdminCreationRequest;
 import com.auth_service.dto.AllUsersResponse;
 import com.auth_service.dto.LoginRequest;
 import com.auth_service.dto.LoginResponse;
+import com.auth_service.dto.NotificationEvent;
 import com.auth_service.dto.RegisterRequest;
 import com.auth_service.model.Erole;
 import com.auth_service.model.Role;
@@ -29,6 +30,8 @@ public class AuthServiceImpl implements AuthService {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private JwtUtil jwtutils;
+	@Autowired
+	private NotificationPublisher publisher;
 
 	public void register(RegisterRequest request) {
 
@@ -48,6 +51,17 @@ public class AuthServiceImpl implements AuthService {
 		user.setActive(true);
 
 		userRepository.save(user);
+		
+		//here afte saving this event is done where it placees it in rabbt queue
+		NotificationEvent event = new NotificationEvent(
+		        "USER_CREATED",
+		        user.getEmail(),
+		        "Welcome",
+		        "Hello " + user.getName() + ", your account is ready."
+		);
+
+		publisher.publish(event, "user.created");
+
 	}
 
 	public LoginResponse login(LoginRequest request) {
