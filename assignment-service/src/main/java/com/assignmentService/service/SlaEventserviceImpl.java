@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SlaEventserviceImpl implements SlaEventService{
 	
-	private SlaEventRepository eventRepository;
+	private final SlaEventRepository eventRepository;
 
 	@Override
 	public List<SlaEvent> getAllEvents() {

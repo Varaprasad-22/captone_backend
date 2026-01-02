@@ -45,6 +45,6 @@ public class TicketController {
 			@Valid @RequestBody UpdateTicketStatusRequest request) {
 
 		ticketService.updateStatus(ticketId, request.getStatus());
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 }
