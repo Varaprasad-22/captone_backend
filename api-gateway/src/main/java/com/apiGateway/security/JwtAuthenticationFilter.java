@@ -1,5 +1,7 @@
 package com.apiGateway.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -15,10 +17,18 @@ import org.springframework.web.server.ServerWebExchange;
 @Component
 public class JwtAuthenticationFilter implements GatewayFilter {
 
-    private final JwtValidator jwtValidator;
 
-    public JwtAuthenticationFilter(JwtValidator jwtValidator) {
+    private static final Logger log =
+            LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    private final JwtValidator jwtValidator;
+    private final RoleBasedAuthorizationFilter rbacFilter;
+
+    public JwtAuthenticationFilter(
+            JwtValidator jwtValidator,
+            RoleBasedAuthorizationFilter rbacFilter) {
         this.jwtValidator = jwtValidator;
+        this.rbacFilter = rbacFilter;
     }
 
     @Override
@@ -26,35 +36,49 @@ public class JwtAuthenticationFilter implements GatewayFilter {
 
         String path = exchange.getRequest().getURI().getPath();
 
-        // Allow auth endpoints
-        if (path.startsWith("/auth/")) {
+        log.info(" Incoming request: {} {}", 
+                exchange.getRequest().getMethod(), path);
+        
+        // Skip the login and register routes
+        if (path.startsWith("/auth/login") || path.startsWith("/auth/register")) {
+            log.info(" Public endpoint, skipping JWT check");
             return chain.filter(exchange);
         }
 
+        // Extract the Authorization header
         String authHeader = exchange.getRequest()
                 .getHeaders()
-                .getFirst(HttpHeaders.AUTHORIZATION);
-
+                .getFirst("Authorization");
+        log.info(" Authorization header = {}", authHeader);
+        // If there's no Authorization header or it's not a Bearer token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn(" Missing or invalid Authorization header");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
 
         try {
-            String token = authHeader.substring(7);
-            Claims claims = jwtValidator.validate(token);
+            // Validate the JWT token and extract claims
+            Claims claims = jwtValidator.validate(authHeader.substring(7));
+            log.info("JWT validated | userId={} | role={}",
+                    claims.getSubject(),
+                    claims.get("role", String.class));
 
-            ServerHttpRequest mutatedRequest = exchange.getRequest()
-                    .mutate()
-                    .header("X-User-Id", claims.getSubject())
-                    .header("X-Role", claims.get("role", String.class))
-                    .header("X-User-Name", claims.get("name", String.class))
-                    .header("X-User-Email", claims.get("email", String.class))
-                    .build();
-
-            return chain.filter(exchange.mutate().request(mutatedRequest).build());
+            // Add the headers for User ID, Role, Name, and Email
+            return rbacFilter.authorize(exchange, claims, chain)
+                    .then(chain.filter(
+                        exchange.mutate()
+                            .request(exchange.getRequest().mutate()
+                                .header("X-USER-ID", claims.getSubject())  // User ID
+                                .header("X-ROLE", claims.get("role", String.class))  // Role
+                                .header("X-USER-NAME", claims.get("name", String.class))  // User Name
+                                .header("X-USER-EMAIL", claims.get("email", String.class))  // User Email
+                                .build())
+                            .build()
+                    ));
 
         } catch (Exception e) {
+            log.error("❌ JWT validation failed", e);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }

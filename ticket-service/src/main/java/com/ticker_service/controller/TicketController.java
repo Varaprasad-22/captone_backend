@@ -36,8 +36,8 @@ public class TicketController {
 
 	// this is one for creating ticket where we send userid from token or other ways
 	@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> createTicket(@RequestHeader("User-Id") String userId,
-			@RequestHeader("EmailId") String userEmail, @RequestPart("ticket") @Valid CreateTicketRequest request,
+	public ResponseEntity<String> createTicket(@RequestHeader("X-USER-ID") String userId,
+			@RequestHeader("X-USER-EMAIL") String userEmail, @RequestPart("ticket") @Valid CreateTicketRequest request,
 			@RequestPart(value = "files", required = false) List<MultipartFile> files) {
 		String ticketId = ticketService.createTicket(request, files, userId, userEmail);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ticketId);
