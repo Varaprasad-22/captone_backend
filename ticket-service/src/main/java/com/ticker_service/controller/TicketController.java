@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ticker_service.dto.AddCommentRequest;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
@@ -70,7 +71,17 @@ public class TicketController {
 	@PutMapping("/{ticketId}/updateAgentId")
 	public ResponseEntity<Void> updateUserId(@PathVariable String ticketId,
 			@Valid @RequestBody UpdateAssignedAgent request) {
-		ticketService.updateAgentId(ticketId,request);
+		ticketService.updateAgentId(ticketId, request);
 		return ResponseEntity.noContent().build();
+	}
+
+	// now for writing comments
+	@PostMapping("/{ticketId}/comments")
+	public ResponseEntity<Void> addComment(@PathVariable String ticketId, @RequestHeader("X-USER-ID") String authorId,
+			@Valid @RequestBody AddCommentRequest request) {
+
+		ticketService.addComment(ticketId, authorId, request.getText(), request.isInternal());
+
+		return ResponseEntity.ok().build();
 	}
 }

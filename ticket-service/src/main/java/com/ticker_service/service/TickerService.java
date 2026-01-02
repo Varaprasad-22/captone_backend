@@ -30,4 +30,7 @@ public interface TickerService {
 
 
 	void updateAgentId(String ticketId, @Valid UpdateAssignedAgent request);
+
+
+	void addComment(String ticketId, String authorId, String text, boolean internal);
 }

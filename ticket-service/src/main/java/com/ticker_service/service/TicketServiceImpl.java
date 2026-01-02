@@ -3,6 +3,7 @@ package com.ticker_service.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,12 @@ import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.TicketStatusUpdateRequest;
 import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.model.Attachment;
+import com.ticker_service.model.Comment;
 import com.ticker_service.model.Priority;
 import com.ticker_service.model.Ticket;
 import com.ticker_service.model.TicketStatus;
 import com.ticker_service.repository.AttachmentRepository;
+import com.ticker_service.repository.CommentRepository;
 import com.ticker_service.repository.TicketRepository;
 
 import jakarta.validation.Valid;
@@ -36,6 +39,8 @@ public class TicketServiceImpl implements TickerService {
 	private NotificationPublisher publisher;
 	@Autowired
 	private AssignmentClient assignmentClient;
+	@Autowired
+	private CommentRepository commentRepo;
 
 	@Override
 	public String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId,
@@ -132,7 +137,23 @@ public class TicketServiceImpl implements TickerService {
 		existingTicket.setAssignedAgentId(request.getAgentId());
 		existingTicket.setUpdatedAt(LocalDateTime.now());
 		existingTicket.setPriority(request.getPriority());
-		    ticketRepository.save(existingTicket);
+		ticketRepository.save(existingTicket);
+	}
+
+	@Override
+	public void addComment(String ticketId, String authorId, String text, boolean internal) {
+		// TODO Auto-generated method stub
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+		Comment comment = new Comment();
+		comment.setCommentId(UUID.randomUUID().toString());
+		comment.setAuthorId(authorId);
+		comment.setText(text);
+		comment.setInternal(internal);
+		comment.setCreatedAt(LocalDateTime.now());
+
+		commentRepo.save(comment);
+
 	}
 
 	// see since from db we get ticket we wanted ticket Response
