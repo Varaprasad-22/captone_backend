@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateAssignedAgent {
 
-	@NotBlank
-	private String agentId;
+    @NotBlank(message = "Agent ID is mandatory")
+    private String agentId;
 	
 	private Priority priority;
 }

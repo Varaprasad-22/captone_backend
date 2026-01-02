@@ -8,7 +8,8 @@ import lombok.Data;
 @Data
 public class UpdateTicketStatusRequest {
 
-    @NotNull
+
+    @NotNull(message = "Ticket status is mandatory")
     private TicketStatus status;
 }
 
