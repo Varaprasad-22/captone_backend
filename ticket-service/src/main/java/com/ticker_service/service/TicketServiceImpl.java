@@ -13,6 +13,7 @@ import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.NotificationEvent;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.TicketStatusUpdateRequest;
+import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.model.Attachment;
 import com.ticker_service.model.Ticket;
 import com.ticker_service.model.TicketStatus;
@@ -120,6 +121,17 @@ public class TicketServiceImpl implements TickerService {
 			response.setUpdatedAt(ticket.getUpdatedAt());
 			return response;
 		}).toList();
+	}
+
+	@Override
+	public void updateAgentId(String ticketId, @Valid UpdateAssignedAgent request) {
+		// TODO Auto-generated method stub
+		Ticket existingTicket = ticketRepository.findById(ticketId)
+				.orElseThrow(() -> new RuntimeException("Ticket not found"));
+		existingTicket.setAssignedAgentId(request.getAgentId());
+		existingTicket.setUpdatedAt(LocalDateTime.now());
+
+		    ticketRepository.save(existingTicket);
 	}
 
 	// see since from db we get ticket we wanted ticket Response

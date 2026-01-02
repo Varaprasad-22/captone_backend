@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
+import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.model.TicketStatus;
 
 import jakarta.validation.Valid;
@@ -26,4 +27,7 @@ public interface TickerService {
 
 
 	List<TicketResponse> getAllTickets();
+
+
+	void updateAgentId(String ticketId, @Valid UpdateAssignedAgent request);
 }

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
+import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.dto.UpdateTicketStatusRequest;
 import com.ticker_service.service.TickerService;
 
@@ -49,20 +50,27 @@ public class TicketController {
 		ticketService.updateStatus(ticketId, request.getStatus());
 		return ResponseEntity.noContent().build();
 	}
-	
-	//show the open tickets
+
+	// show the open tickets
 	@GetMapping("/getAllOpenTickets")
-	public ResponseEntity<List<TicketResponse>> getAllOpenTickets(){
+	public ResponseEntity<List<TicketResponse>> getAllOpenTickets() {
 		return ResponseEntity.ok().body(ticketService.getAllOpenTickets());
 	}
-	
+
 	@GetMapping("/{userId}/getTickets")
-	public ResponseEntity<List<TicketResponse>> getPerUserTickets(@PathVariable String userId){
+	public ResponseEntity<List<TicketResponse>> getPerUserTickets(@PathVariable String userId) {
 		return ResponseEntity.ok().body(ticketService.getPerUserTickets(userId));
 	}
-	
+
 	@GetMapping("/getAllTickets")
-	public ResponseEntity<List<TicketResponse>> getAllTickets(){
+	public ResponseEntity<List<TicketResponse>> getAllTickets() {
 		return ResponseEntity.ok().body(ticketService.getAllTickets());
+	}
+
+	@PutMapping("/{ticketId}/updateAgentId")
+	public ResponseEntity<Void> updateUserId(@PathVariable String ticketId,
+			@Valid @RequestBody UpdateAssignedAgent request) {
+		ticketService.updateAgentId(ticketId,request);
+		return ResponseEntity.noContent().build();
 	}
 }

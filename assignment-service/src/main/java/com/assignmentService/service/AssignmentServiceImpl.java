@@ -14,6 +14,7 @@ import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
 import com.assignmentService.dto.NotificationEvent;
 import com.assignmentService.dto.ReAssignment;
+import com.assignmentService.dto.UpdateAssignedAgent;
 import com.assignmentService.dto.UpdateTicketStatusRequest;
 import com.assignmentService.dto.UserInfoResponse;
 import com.assignmentService.model.Assignment;
@@ -55,7 +56,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		assign.setAssignmentId(UUID.randomUUID().toString());
 
 		Assignment saved = assignmentRepo.save(assign);
-
+		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId()));
 		slaService.createSla(saved);
 
 		// get the email via feing client from auth db and send it to email
@@ -106,6 +107,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		newAssignment.setPriority(oldAssignment.getPriority());
 		newAssignment.setStatus(SlaStatus.ACTIVE);
 		Assignment saved = assignmentRepo.save(newAssignment);
+		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId()));
 		slaService.createSla(newAssignment);
 		return newAssignment.getAssignmentId();
 	}
