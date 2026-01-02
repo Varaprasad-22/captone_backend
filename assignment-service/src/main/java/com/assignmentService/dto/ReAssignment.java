@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReAssignment {
 
-	@NotBlank
+
+    @NotBlank(message = "Ticket ID is mandatory")
 	private String ticketId;
 	
-	@NotBlank
+
+    @NotBlank(message = "Agent ID is mandatory")
 	private String newAgentId;
 }

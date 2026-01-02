@@ -14,10 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AssignmentRequest {
 
-	@NotBlank
+
+    @NotBlank(message = "Ticket ID is mandatory")
 	private String ticketId;
 
-	@NotBlank
+
+    @NotBlank(message = "Agent ID is mandatory")
 	private String agentId;
 
     private Priority priority; // HIGH / MEDIUM / LOW
