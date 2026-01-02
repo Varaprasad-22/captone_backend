@@ -1,5 +1,7 @@
 package com.assignmentService.dto;
 
+import com.assignmentService.model.Priority;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -7,4 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class UpdateAssignedAgent {
 	private String agentId;
+	
+	private Priority priority;
 }

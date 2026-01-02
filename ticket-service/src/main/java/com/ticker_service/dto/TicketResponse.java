@@ -2,6 +2,7 @@ package com.ticker_service.dto;
 
 import java.time.LocalDateTime;
 
+import com.ticker_service.model.Priority;
 import com.ticker_service.model.TicketCategory;
 import com.ticker_service.model.TicketStatus;
 
@@ -17,7 +18,7 @@ public class TicketResponse {
 
 	private TicketCategory category;
 
-	private String priority;
+	private Priority priority;
 
 	private TicketStatus status;
 

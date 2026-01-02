@@ -61,7 +61,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		assign.setAssignmentId(UUID.randomUUID().toString());
 
 		Assignment saved = assignmentRepo.save(assign);
-		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId()));
+		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId(),saved.getPriority()));
 		slaService.createSla(saved);
 
 		// get the email via feing client from auth db and send it to email
@@ -93,6 +93,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	}
 
 	@Override
+	@Transactional
 	public String reassign(String assignedBy, ReAssignment request) {
 		// TODO Auto-generated method stub
 		Assignment oldAssignment = assignmentRepo.findByTicketId(request.getTicketId())
@@ -112,7 +113,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		newAssignment.setPriority(oldAssignment.getPriority());
 		newAssignment.setStatus(SlaStatus.ACTIVE);
 		Assignment saved = assignmentRepo.save(newAssignment);
-		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId()));
+		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId(),saved.getPriority()));
 		slaService.createSla(newAssignment);
 		return newAssignment.getAssignmentId();
 	}

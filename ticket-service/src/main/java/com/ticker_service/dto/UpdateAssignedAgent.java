@@ -1,5 +1,7 @@
 package com.ticker_service.dto;
 
+import com.ticker_service.model.Priority;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,4 +15,6 @@ public class UpdateAssignedAgent {
 
 	@NotBlank
 	private String agentId;
+	
+	private Priority priority;
 }

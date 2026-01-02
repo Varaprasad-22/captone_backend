@@ -15,6 +15,7 @@ import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.TicketStatusUpdateRequest;
 import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.model.Attachment;
+import com.ticker_service.model.Priority;
 import com.ticker_service.model.Ticket;
 import com.ticker_service.model.TicketStatus;
 import com.ticker_service.repository.AttachmentRepository;
@@ -43,7 +44,7 @@ public class TicketServiceImpl implements TickerService {
 		ticket.setTitle(request.getTitle());
 		ticket.setDescription(request.getDescription());
 		ticket.setCategory(request.getCategory());
-		ticket.setPriority("Low");
+		ticket.setPriority(Priority.LOW);
 		ticket.setStatus(TicketStatus.OPEN);
 		ticket.setCreatedByUserId(userId);
 		ticket.setCreatedAt(LocalDateTime.now());
@@ -130,7 +131,7 @@ public class TicketServiceImpl implements TickerService {
 				.orElseThrow(() -> new RuntimeException("Ticket not found"));
 		existingTicket.setAssignedAgentId(request.getAgentId());
 		existingTicket.setUpdatedAt(LocalDateTime.now());
-
+		existingTicket.setPriority(request.getPriority());
 		    ticketRepository.save(existingTicket);
 	}
 

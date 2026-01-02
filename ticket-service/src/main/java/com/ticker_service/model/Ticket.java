@@ -20,7 +20,7 @@ public class Ticket {
 
 	private TicketCategory category;
 
-	private String priority;
+	private Priority priority;
 
 	private TicketStatus status;
 

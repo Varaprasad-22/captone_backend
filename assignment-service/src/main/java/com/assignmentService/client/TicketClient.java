@@ -17,6 +17,6 @@ public interface TicketClient {
 	@PutMapping("/tickets/{ticketId}/status")
 	void updateTicketStatus(@PathVariable String ticketId, @RequestBody UpdateTicketStatusRequest request);
 
-	@PutMapping("/{ticketId}/updateAgentId")
+	@PutMapping("/tickets/{ticketId}/updateAgentId")
 	void updateUserId(@PathVariable String ticketId, @Valid @RequestBody UpdateAssignedAgent request);
 }
