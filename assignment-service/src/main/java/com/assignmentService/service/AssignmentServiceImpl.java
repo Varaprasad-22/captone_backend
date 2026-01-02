@@ -1,12 +1,14 @@
 package com.assignmentService.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.assignmentService.client.AuthClient;
+import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
 import com.assignmentService.dto.NotificationEvent;
 import com.assignmentService.dto.UserInfoResponse;
@@ -54,5 +56,17 @@ public class AssignmentServiceImpl implements AssignmentService {
 		publisher.publish(event, "assignment.created");
 
 		return assign.getAssignmentId();
+	}
+
+	@Override
+	public List<AgentWorkLoadResponse> getAgentWorkload(String agentId) {
+		// TODO Auto-generated method stub
+		 return assignmentRepo.countByStatus(agentId)
+		            .stream()
+		            .map(r -> new AgentWorkLoadResponse(
+		                    r[0].toString(),
+		                    (Long) r[1]
+		            ))
+		            .toList();
 	}
 }
