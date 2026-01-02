@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.assignmentService.dto.SlaEventResponse;
 import com.assignmentService.model.SlaEvent;
 import com.assignmentService.service.SlaEventService;
 
@@ -25,12 +26,12 @@ public class SlaEventController {
 	// remove based on risk they posses
 
 	@GetMapping
-	public ResponseEntity<List<SlaEvent>> getAllEvents() {
+	public ResponseEntity<List<SlaEventResponse>> getAllEvents() {
 		return ResponseEntity.ok(slaEventService.getAllEvents());
 	}
 
 	@GetMapping("/agent/{agentId}")
-	public ResponseEntity<List<SlaEvent>> getAgentEvents(@PathVariable String agentId) {
+	public ResponseEntity<List<SlaEventResponse>> getAgentEvents(@PathVariable String agentId) {
 
 		return ResponseEntity.ok(slaEventService.getEventsByAgent(agentId));
 	}

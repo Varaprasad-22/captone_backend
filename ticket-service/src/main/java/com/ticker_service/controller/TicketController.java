@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.dto.AddCommentRequest;
+import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
@@ -87,7 +88,7 @@ public class TicketController {
 	}
 	
 	@GetMapping("/{ticketId}/getComments")
-	public ResponseEntity<List<Comment>> getComments(@PathVariable String ticketId){
+	public ResponseEntity<List<CommentResponse>> getComments(@PathVariable String ticketId){
 		return ResponseEntity.ok().body(ticketService.getComments(ticketId));
 	}
 }

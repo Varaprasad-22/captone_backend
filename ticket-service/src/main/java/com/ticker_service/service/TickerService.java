@@ -5,6 +5,7 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
@@ -36,5 +37,5 @@ public interface TickerService {
 	void addComment(String ticketId, String authorId, String text, boolean internal);
 
 
-	List<Comment> getComments(String ticketId);
+	List<CommentResponse> getComments(String ticketId);
 }

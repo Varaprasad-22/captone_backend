@@ -2,11 +2,12 @@ package com.assignmentService.service;
 
 import java.util.List;
 
+import com.assignmentService.dto.SlaEventResponse;
 import com.assignmentService.model.SlaEvent;
 
 public interface SlaEventService {
 
-    List<SlaEvent> getAllEvents();
+    List<SlaEventResponse> getAllEvents();
 
-    List<SlaEvent> getEventsByAgent(String agentId);
+    List<SlaEventResponse> getEventsByAgent(String agentId);
 }

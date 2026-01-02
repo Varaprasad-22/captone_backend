@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.client.AssignmentClient;
+import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.NotificationEvent;
 import com.ticker_service.dto.TicketResponse;
@@ -157,9 +158,19 @@ public class TicketServiceImpl implements TickerService {
 	}
 
 	@Override
-	public List<Comment> getComments(String ticketId) {
+	public List<CommentResponse> getComments(String ticketId) {
 		// TODO Auto-generated method stub
-		return commentRepo.findAllByTicketId(ticketId).stream().toList();
+		return commentRepo.findAllByTicketId(ticketId).stream().map(comment->{
+				CommentResponse response=new CommentResponse();
+				response.setAuthorId(comment.getAuthorId());
+				response.setCommentId(comment.getCommentId());
+				response.setCreatedAt(comment.getCreatedAt());
+				response.setInternal(comment.isInternal());
+				response.setText(comment.getText());
+				response.setTicketId(comment.getTicketId());
+				return response;
+				}
+				).toList();
 	}
 
 	// see since from db we get ticket we wanted ticket Response
