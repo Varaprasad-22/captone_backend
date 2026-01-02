@@ -43,42 +43,30 @@ public class RoleBasedAuthorizationFilter {
         Map.entry("GET:/sla-events", List.of(ADMIN, MANAGER))
     );
 
-    public Mono<Void> authorize(ServerWebExchange exchange, Claims claims, GatewayFilterChain chain) {
+    public Mono<Void> authorize(ServerWebExchange exchange, Claims claims) {
 
         String role = claims.get("role", String.class);
         String path = exchange.getRequest().getURI().getPath();
         String method = exchange.getRequest().getMethod().name();
 
-        // INTERNAL endpoints → always allowed
-        if (path.contains("/internal/")) {
-            return chain.filter(exchange);
-        }
-
-        // PUBLIC endpoints
-        if (path.startsWith("/auth/login") || path.startsWith("/auth/register")) {
-            return chain.filter(exchange);
-        }
-        
-        boolean ruleMatched = false;
-
-
         for (Map.Entry<String, List<String>> rule : ROLE_RULES.entrySet()) {
 
-            String[] ruleParts = rule.getKey().split(":");
-            HttpMethod ruleMethod = HttpMethod.valueOf(ruleParts[0]);
-            String rulePath = ruleParts[1];
+            String[] parts = rule.getKey().split(":");
+            HttpMethod ruleMethod = HttpMethod.valueOf(parts[0]);
+            String pattern = parts[1];
 
-            if (method.equals(ruleMethod.name())  && matcher.match(rulePath,path)) {
+            if (method.equals(ruleMethod.name()) && matcher.match(pattern, path)) {
 
-                ruleMatched = true;
                 if (!rule.getValue().contains(role)) {
                     exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                     return exchange.getResponse().setComplete();
                 }
-                return chain.filter(exchange);
+
+                return Mono.empty(); // allowed
             }
         }
 
-        return chain.filter(exchange);
+        return Mono.empty(); // open endpoint
     }
+
 }

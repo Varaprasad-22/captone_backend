@@ -57,30 +57,30 @@ public class JwtAuthenticationFilter implements GatewayFilter {
             return exchange.getResponse().setComplete();
         }
 
+        Claims claims;
         try {
-            // Validate the JWT token and extract claims
-            Claims claims = jwtValidator.validate(authHeader.substring(7));
-            log.info("JWT validated | userId={} | role={}",
-                    claims.getSubject(),
-                    claims.get("role", String.class));
-
-            // Add the headers for User ID, Role, Name, and Email
-            return rbacFilter.authorize(exchange, claims, chain)
-                    .then(chain.filter(
-                        exchange.mutate()
-                            .request(exchange.getRequest().mutate()
-                                .header("X-USER-ID", claims.getSubject())  // User ID
-                                .header("X-ROLE", claims.get("role", String.class))  // Role
-                                .header("X-USER-NAME", claims.get("name", String.class))  // User Name
-                                .header("X-USER-EMAIL", claims.get("email", String.class))  // User Email
-                                .build())
-                            .build()
-                    ));
-
+            claims = jwtValidator.validate(authHeader.substring(7));
         } catch (Exception e) {
-            log.error("❌ JWT validation failed", e);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
+
+        // 🔒 RBAC decision
+        Mono<Void> rbacResult = rbacFilter.authorize(exchange, claims);
+
+        // ⛔ IMPORTANT: if RBAC completed response, STOP
+        if (exchange.getResponse().isCommitted()) {
+            return rbacResult;
+        }
+
+        // ✅ Allowed → forward request
+        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                .header("X-USER-ID", claims.getSubject())
+                .header("X-ROLE", claims.get("role", String.class))
+                .header("X-USER-NAME", claims.get("name", String.class))
+                .header("X-USER-EMAIL", claims.get("email", String.class))
+                .build();
+
+        return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 }
