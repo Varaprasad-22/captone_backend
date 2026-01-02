@@ -17,4 +17,6 @@ public interface TicketRepository extends MongoRepository<Ticket, String> {
 
 	List<TicketResponse> findByStatus(TicketStatus open);
 
+	List<TicketResponse> findByCreatedByUserId(String userId);
+
 }

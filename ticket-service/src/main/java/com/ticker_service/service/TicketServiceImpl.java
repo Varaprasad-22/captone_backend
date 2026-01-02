@@ -99,4 +99,10 @@ public class TicketServiceImpl implements TickerService {
 		return ticketRepository.findByStatus(TicketStatus.OPEN);
 	}
 
+	@Override
+	public List<TicketResponse> getPerUserTickets(String userId) {
+		// TODO Auto-generated method stub
+		return ticketRepository.findByCreatedByUserId(userId);
+	}
+
 }

@@ -20,4 +20,7 @@ public interface TickerService {
 
 
 	List<TicketResponse> getAllOpenTickets();
+
+
+	List<TicketResponse> getPerUserTickets(String userId);
 }

@@ -55,4 +55,9 @@ public class TicketController {
 	public ResponseEntity<List<TicketResponse>> getAllOpenTickets(){
 		return ResponseEntity.ok().body(ticketService.getAllOpenTickets());
 	}
+	
+	@GetMapping("/{userId}/getTickets")
+	public ResponseEntity<List<TicketResponse>> getPerUserTickets(@PathVariable String userId){
+		return ResponseEntity.ok().body(ticketService.getPerUserTickets(userId));
+	}
 }
