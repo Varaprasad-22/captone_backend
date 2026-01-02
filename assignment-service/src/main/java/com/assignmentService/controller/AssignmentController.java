@@ -17,7 +17,9 @@ import com.assignmentService.dto.AgentStatusCount;
 import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
 import com.assignmentService.dto.ReAssignment;
+import com.assignmentService.dto.TicketStatusUpdateRequest;
 import com.assignmentService.service.AssignmentService;
+import com.assignmentService.service.SlaService;
 
 import jakarta.validation.Valid;
 
@@ -27,6 +29,8 @@ public class AssignmentController {
 	
 	@Autowired
 	private AssignmentService assignmentService;
+	@Autowired
+	private SlaService slaService;
 
 	@PostMapping("/assign")
 	public ResponseEntity<String> assignTicket(@RequestHeader("X-USER-ID") String assignedBy,
@@ -57,4 +61,17 @@ public class AssignmentController {
 			@Valid @RequestBody ReAssignment request){
 		return ResponseEntity.ok().body(assignmentService.reassign(assignedBy,request));
 	}
+	
+	//for responses
+	@PutMapping("/internal/sla/update-from-ticket")
+	public ResponseEntity<Void> updateSlaFromTicket(
+	        @RequestBody TicketStatusUpdateRequest request) {
+
+	    slaService.updateFromTicketStatus(
+	            request.getTicketId(),
+	            request.getStatus()
+	    );
+	    return ResponseEntity.ok().build();
+	}
+
 }

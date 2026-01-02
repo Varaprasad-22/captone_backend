@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ticker_service.client.AssignmentClient;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.NotificationEvent;
+import com.ticker_service.dto.TicketStatusUpdateRequest;
 import com.ticker_service.model.Attachment;
 import com.ticker_service.model.Ticket;
 import com.ticker_service.model.TicketStatus;
@@ -29,6 +31,8 @@ public class TicketServiceImpl implements TickerService {
 	private AttachmentRepository attachmentRepository;
 	@Autowired
 	private NotificationPublisher publisher;
+	@Autowired
+	private AssignmentClient assignmentClient;
 
 	@Override
 	public String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId,
@@ -82,6 +86,10 @@ public class TicketServiceImpl implements TickerService {
         ticket.setUpdatedAt(LocalDateTime.now());
 
         ticketRepository.save(ticket);
+        if(TicketStatus.ASSIGNED!=status)
+        assignmentClient.updateSlaFromTicket(
+                new TicketStatusUpdateRequest(ticketId, status)
+            );
 	}
 
 }
