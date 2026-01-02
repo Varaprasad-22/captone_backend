@@ -72,4 +72,16 @@ public class TicketServiceImpl implements TickerService {
 		return "Ticket Created Succesfully" + saved.getTicketId();
 	}
 
+	@Override
+	public void updateStatus(String ticketId, TicketStatus status) {
+		// TODO Auto-generated method stub
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        ticket.setStatus(status);
+        ticket.setUpdatedAt(LocalDateTime.now());
+
+        ticketRepository.save(ticket);
+	}
+
 }
