@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.dto.CreateTicketRequest;
+import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateTicketStatusRequest;
 import com.ticker_service.service.TickerService;
 
@@ -46,5 +48,11 @@ public class TicketController {
 
 		ticketService.updateStatus(ticketId, request.getStatus());
 		return ResponseEntity.noContent().build();
+	}
+	
+	//show the open tickets
+	@GetMapping("/getAllOpenTickets")
+	public ResponseEntity<List<TicketResponse>> getAllOpenTickets(){
+		return ResponseEntity.ok().body(ticketService.getAllOpenTickets());
 	}
 }

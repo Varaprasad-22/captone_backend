@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ticker_service.client.AssignmentClient;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.NotificationEvent;
+import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.TicketStatusUpdateRequest;
 import com.ticker_service.model.Attachment;
 import com.ticker_service.model.Ticket;
@@ -90,6 +91,12 @@ public class TicketServiceImpl implements TickerService {
         assignmentClient.updateSlaFromTicket(
                 new TicketStatusUpdateRequest(ticketId, status)
             );
+	}
+
+	@Override
+	public List<TicketResponse> getAllOpenTickets() {
+		// TODO Auto-generated method stub
+		return ticketRepository.findByStatus(TicketStatus.OPEN);
 	}
 
 }
