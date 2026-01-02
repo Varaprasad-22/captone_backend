@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.assignmentService.client.AuthClient;
+import com.assignmentService.client.TicketClient;
 import com.assignmentService.dto.AgentStatusCount;
 import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
 import com.assignmentService.dto.NotificationEvent;
+import com.assignmentService.dto.UpdateTicketStatusRequest;
 import com.assignmentService.dto.UserInfoResponse;
 import com.assignmentService.model.Assignment;
 import com.assignmentService.model.SlaStatus;
@@ -30,6 +32,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 	private AuthClient authClient;
 	@Autowired
 	private NotificationPublisher publisher;
+	@Autowired
+	private TicketClient ticketClient;
 
 	@Transactional
 	public String assign(AssignmentRequest req, String assignedBy) {
@@ -55,6 +59,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 				"You have been assigned ticket " + saved.getTicketId());
 
 		publisher.publish(event, "assignment.created");
+		
+		ticketClient.updateTicketStatus(req.getTicketId(), new UpdateTicketStatusRequest(SlaStatus.ASSIGNED));
 
 		return assign.getAssignmentId();
 	}
