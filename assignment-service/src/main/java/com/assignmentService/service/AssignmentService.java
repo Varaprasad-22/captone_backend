@@ -7,6 +7,9 @@ import org.jspecify.annotations.Nullable;
 import com.assignmentService.dto.AgentStatusCount;
 import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
+import com.assignmentService.dto.ReAssignment;
+
+import jakarta.validation.Valid;
 
 public interface AssignmentService {
 
@@ -14,5 +17,7 @@ public interface AssignmentService {
 
 	List<AgentWorkLoadResponse> getAgentWorkload(String agentId);
 
-	 List<AgentStatusCount> getAllAgentsWorkload(); 
+	 List<AgentStatusCount> getAllAgentsWorkload();
+
+	 String  reassign(String assignedBy, @Valid ReAssignment request); 
 }

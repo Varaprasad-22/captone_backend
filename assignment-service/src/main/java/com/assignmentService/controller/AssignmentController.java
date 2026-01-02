@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.assignmentService.dto.AgentStatusCount;
 import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
+import com.assignmentService.dto.ReAssignment;
 import com.assignmentService.service.AssignmentService;
 
 import jakarta.validation.Valid;
@@ -50,4 +51,10 @@ public class AssignmentController {
 	    return ResponseEntity.ok(assignmentService.getAllAgentsWorkload());
 	}
 
+	//reassignments of tickets
+	@PostMapping("/reassign")
+	public ResponseEntity<String> reassign(@RequestHeader("X-USER-ID") String assignedBy,
+			@Valid @RequestBody ReAssignment request){
+		return ResponseEntity.ok().body(assignmentService.reassign(assignedBy,request));
+	}
 }

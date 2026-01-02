@@ -13,13 +13,18 @@ import com.assignmentService.dto.AgentStatusCount;
 import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
 import com.assignmentService.dto.NotificationEvent;
+import com.assignmentService.dto.ReAssignment;
 import com.assignmentService.dto.UpdateTicketStatusRequest;
 import com.assignmentService.dto.UserInfoResponse;
 import com.assignmentService.model.Assignment;
+import com.assignmentService.model.Priority;
+import com.assignmentService.model.Sla;
 import com.assignmentService.model.SlaStatus;
 import com.assignmentService.repositories.AssignmentRepository;
+import com.assignmentService.repositories.SlaRepository;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 @Service
 public class AssignmentServiceImpl implements AssignmentService {
@@ -34,6 +39,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 	private NotificationPublisher publisher;
 	@Autowired
 	private TicketClient ticketClient;
+	@Autowired
+	private SlaRepository slaRepo;
 
 	@Transactional
 	public String assign(AssignmentRequest req, String assignedBy) {
@@ -43,7 +50,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		assign.setAgentId(req.getAgentId());
 		assign.setAssignedBy(assignedBy);
 		assign.setAssignedAt(LocalDateTime.now());
-		assign.setPriority(req.getPriority());
+		assign.setPriority(req.getPriority() != null ? req.getPriority() : Priority.LOW);
 		assign.setStatus(SlaStatus.ACTIVE);
 		assign.setAssignmentId(UUID.randomUUID().toString());
 
@@ -54,12 +61,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 		// get the email via feing client from auth db and send it to email
 		UserInfoResponse agent = authClient.getUserById(req.getAgentId());
 
-		NotificationEvent event = new NotificationEvent("ASSIGNMENT_CREATED", agent.getEmail(), 
-				"New Ticket Assigned",
+		NotificationEvent event = new NotificationEvent("ASSIGNMENT_CREATED", agent.getEmail(), "New Ticket Assigned",
 				"You have been assigned ticket " + saved.getTicketId());
 
 		publisher.publish(event, "assignment.created");
-		
+
 		ticketClient.updateTicketStatus(req.getTicketId(), new UpdateTicketStatusRequest(SlaStatus.ASSIGNED));
 
 		return assign.getAssignmentId();
@@ -68,24 +74,39 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Override
 	public List<AgentWorkLoadResponse> getAgentWorkload(String agentId) {
 		// TODO Auto-generated method stub
-		 return assignmentRepo.countByStatus(agentId)
-		            .stream()
-		            .map(r -> new AgentWorkLoadResponse(
-		                    r[0].toString(),
-		                    (Long) r[1]
-		            ))
-		            .toList();
+		return assignmentRepo.countByStatus(agentId).stream()
+				.map(r -> new AgentWorkLoadResponse(r[0].toString(), (Long) r[1])).toList();
 	}
 
 	@Override
 	public List<AgentStatusCount> getAllAgentsWorkload() {
-		  return assignmentRepo.getAllAgentWorkload()
-		            .stream()
-		            .map(row -> new AgentStatusCount(
-		                    (String) row[0],          // agentId
-		                    row[1].toString(),        // status
-		                    (Long) row[2]             // count
-		            ))
-		            .toList();
+		return assignmentRepo.getAllAgentWorkload().stream().map(row -> new AgentStatusCount((String) row[0], // agentId
+				row[1].toString(), // status
+				(Long) row[2] // count
+		)).toList();
+	}
+
+	@Override
+	public String reassign(String assignedBy, ReAssignment request) {
+		// TODO Auto-generated method stub
+		Assignment oldAssignment = assignmentRepo.findByTicketId(request.getTicketId())
+				.orElseThrow(() -> new RuntimeException("No Ticlet Found"));
+		oldAssignment.setStatus(SlaStatus.REASSIGNED);
+		assignmentRepo.save(oldAssignment);
+
+//	    Sla oldSla=slaRepo.findByAssignmentId(oldAssignment.getAssignmentId()).orElseThrow(()-> new RuntimeException("No record found"));
+//	    oldSla.set
+
+		Assignment newAssignment = new Assignment();
+		newAssignment.setAssignmentId(UUID.randomUUID().toString());
+		newAssignment.setTicketId(request.getTicketId());
+		newAssignment.setAgentId(request.getNewAgentId());
+		newAssignment.setAssignedBy(assignedBy);
+		newAssignment.setAssignedAt(LocalDateTime.now());
+		newAssignment.setPriority(oldAssignment.getPriority());
+		newAssignment.setStatus(SlaStatus.ACTIVE);
+		Assignment saved = assignmentRepo.save(newAssignment);
+		slaService.createSla(newAssignment);
+		return newAssignment.getAssignmentId();
 	}
 }

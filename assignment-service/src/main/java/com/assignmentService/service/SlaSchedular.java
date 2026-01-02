@@ -45,53 +45,57 @@ public class SlaSchedular {
 			boolean updated = false;
 			Assignment assignment = assignmentRepo.findById(sla.getAssignmentId())
 					.orElseThrow(() -> new RuntimeException("Failed to find assignment"));
+			if (assignment.getStatus() != SlaStatus.CLOSED) {
 
 //            see it checks only for escalations
 //            like if not escalated already 
 //            no response,response crosssed
-			if (!sla.isEscalated() && sla.getRespondedAt() == null && now.isAfter(sla.getResponseDeadline())) {
+				if (!sla.isEscalated() && sla.getRespondedAt() == null && now.isAfter(sla.getResponseDeadline())) {
 
-				sla.setEscalated(true);
+					sla.setEscalated(true);
 
-				updated = true;
+					updated = true;
 
-				updateAssignment(sla.getAssignmentId(), SlaStatus.ESCALATED);
-				slaEventRepository.save(new SlaEvent(null, sla.getAssignmentId(), sla.getTicketId(),
-						assignment.getAgentId(), "ESCALATED", LocalDateTime.now(), "Response SLA crossed"));
-				ticketClient.updateTicketStatus(sla.getTicketId(), new UpdateTicketStatusRequest(SlaStatus.ESCALATED));
+					updateAssignment(sla.getAssignmentId(), SlaStatus.ESCALATED);
+					slaEventRepository.save(new SlaEvent(null, sla.getAssignmentId(), sla.getTicketId(),
+							assignment.getAgentId(), "ESCALATED", LocalDateTime.now(), "Response SLA crossed"));
+					ticketClient.updateTicketStatus(sla.getTicketId(),
+							new UpdateTicketStatusRequest(SlaStatus.ESCALATED));
 
-			}
+				}
 
 //            breach checks like not resolved and dead line crossed even if escalaton true also
-			if (sla.getResolvedAt() == null && now.isAfter(sla.getResolutionDeadline())) {
+				if (sla.getResolvedAt() == null && now.isAfter(sla.getResolutionDeadline())) {
 
-				sla.setBreached(true);
-				updated = true;
+					sla.setBreached(true);
+					updated = true;
 
-				updateAssignment(sla.getAssignmentId(), SlaStatus.BREACHED);
-				// see this is for logs
+					updateAssignment(sla.getAssignmentId(), SlaStatus.BREACHED);
+					// see this is for logs
 
-				slaEventRepository.save(new SlaEvent(null, sla.getAssignmentId(), sla.getTicketId(),
-						assignment.getAgentId(), "ESCALATED", LocalDateTime.now(), "Response SLA crossed"));
+					slaEventRepository.save(new SlaEvent(null, sla.getAssignmentId(), sla.getTicketId(),
+							assignment.getAgentId(), "ESCALATED", LocalDateTime.now(), "Response SLA crossed"));
 
-				// this is for updating in ticket service
+					// this is for updating in ticket service
 
-				ticketClient.updateTicketStatus(sla.getTicketId(), new UpdateTicketStatusRequest(SlaStatus.BREACHED));
-			}
+					ticketClient.updateTicketStatus(sla.getTicketId(),
+							new UpdateTicketStatusRequest(SlaStatus.BREACHED));
+				}
 
 //            prevent unnecesary db writes per minute
-			if (updated) {
+				if (updated) {
 
-				if (sla.isBreached()) {
-					publisher.publish(new NotificationEvent("SLA_BREACHED", "virupavaraprasad22@gmail.com",
-							"SLA Breached", "Ticket " + sla.getTicketId() + " SLA Breached"), "sla.breached");
-				}
-				if (sla.isEscalated()) {
-					publisher.publish(new NotificationEvent("SLA_ESCALATED", "virupavaraprasad22@gmail.com",
-							"SLA Escalation", "Ticket " + sla.getTicketId() + " SLA escalated"), "sla.escalated");
-				}
+					if (sla.isBreached()) {
+						publisher.publish(new NotificationEvent("SLA_BREACHED", "virupavaraprasad22@gmail.com",
+								"SLA Breached", "Ticket " + sla.getTicketId() + " SLA Breached"), "sla.breached");
+					}
+					if (sla.isEscalated()) {
+						publisher.publish(new NotificationEvent("SLA_ESCALATED", "virupavaraprasad22@gmail.com",
+								"SLA Escalation", "Ticket " + sla.getTicketId() + " SLA escalated"), "sla.escalated");
+					}
 
-				slaRepo.save(sla);
+					slaRepo.save(sla);
+				}
 			}
 		}
 	}
