@@ -22,6 +22,7 @@ import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.dto.UpdateTicketStatusRequest;
+import com.ticker_service.model.Comment;
 import com.ticker_service.service.TickerService;
 
 import jakarta.validation.Valid;
@@ -82,6 +83,11 @@ public class TicketController {
 
 		ticketService.addComment(ticketId, authorId, request.getText(), request.isInternal());
 
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+	
+	@GetMapping("/{ticketId}/getComments")
+	public ResponseEntity<List<Comment>> getComments(@PathVariable String ticketId){
+		return ResponseEntity.ok().body(ticketService.getComments(ticketId));
 	}
 }

@@ -151,9 +151,15 @@ public class TicketServiceImpl implements TickerService {
 		comment.setText(text);
 		comment.setInternal(internal);
 		comment.setCreatedAt(LocalDateTime.now());
-
+		comment.setTicketId(ticketId);
 		commentRepo.save(comment);
 
+	}
+
+	@Override
+	public List<Comment> getComments(String ticketId) {
+		// TODO Auto-generated method stub
+		return commentRepo.findAllByTicketId(ticketId).stream().toList();
 	}
 
 	// see since from db we get ticket we wanted ticket Response

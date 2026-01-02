@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
+import com.ticker_service.model.Comment;
 import com.ticker_service.model.TicketStatus;
 
 import jakarta.validation.Valid;
@@ -33,4 +34,7 @@ public interface TickerService {
 
 
 	void addComment(String ticketId, String authorId, String text, boolean internal);
+
+
+	List<Comment> getComments(String ticketId);
 }

@@ -1,6 +1,6 @@
 package com.assignmentService.model;
 
 public enum TicketStatus {
-	INPROGRESS, RESOLVED, CLOSED
+	OPEN, ASSIGNED, INPROGRESS, RESOLVED, CLOSED, FAILED, ESCALATED, BREACHED, REOPEN
 
 }
