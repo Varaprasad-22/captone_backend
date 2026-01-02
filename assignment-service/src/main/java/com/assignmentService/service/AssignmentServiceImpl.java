@@ -46,6 +46,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Transactional
 	public String assign(AssignmentRequest req, String assignedBy) {
 
+		// okay if we retry to assign same ticket to others it show errror
+		assignmentRepo.findByTicketId(req.getTicketId()).ifPresent(a -> {
+			throw new RuntimeException("Ticket is already assigned to an agent");
+		});
+
 		Assignment assign = new Assignment();
 		assign.setTicketId(req.getTicketId());
 		assign.setAgentId(req.getAgentId());
