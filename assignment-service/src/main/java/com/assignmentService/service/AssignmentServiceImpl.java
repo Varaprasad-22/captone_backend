@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.assignmentService.client.AuthClient;
+import com.assignmentService.dto.AgentStatusCount;
 import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
 import com.assignmentService.dto.NotificationEvent;
@@ -66,6 +67,18 @@ public class AssignmentServiceImpl implements AssignmentService {
 		            .map(r -> new AgentWorkLoadResponse(
 		                    r[0].toString(),
 		                    (Long) r[1]
+		            ))
+		            .toList();
+	}
+
+	@Override
+	public List<AgentStatusCount> getAllAgentsWorkload() {
+		  return assignmentRepo.getAllAgentWorkload()
+		            .stream()
+		            .map(row -> new AgentStatusCount(
+		                    (String) row[0],          // agentId
+		                    row[1].toString(),        // status
+		                    (Long) row[2]             // count
 		            ))
 		            .toList();
 	}

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.assignmentService.dto.AgentStatusCount;
 import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.dto.AssignmentRequest;
 import com.assignmentService.service.AssignmentService;
@@ -42,4 +43,11 @@ public class AssignmentController {
 	        assignmentService.getAgentWorkload(agentId)
 	    );
 	}
+	
+	//to see the workload on each 
+	@GetMapping("/manager/workload")
+	public ResponseEntity<List<AgentStatusCount>> getAllAgentsWorkload() {
+	    return ResponseEntity.ok(assignmentService.getAllAgentsWorkload());
+	}
+
 }

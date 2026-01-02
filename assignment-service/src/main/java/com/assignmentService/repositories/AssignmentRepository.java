@@ -12,14 +12,21 @@ import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.model.Assignment;
 
 @Repository
-public interface AssignmentRepository extends JpaRepository<Assignment, String>{
+public interface AssignmentRepository extends JpaRepository<Assignment, String> {
 
 	@Query("""
-		    SELECT a.status, COUNT(a)
-		    FROM Assignment a
-		    WHERE a.agentId = :agentId
-		    GROUP BY a.status
-		""")
-		List<Object[]> countByStatus(@Param("agentId") String agentId);
+			    SELECT a.status, COUNT(a)
+			    FROM Assignment a
+			    WHERE a.agentId = :agentId
+			    GROUP BY a.status
+			""")
+	List<Object[]> countByStatus(@Param("agentId") String agentId);
+
+	@Query("""
+			    SELECT a.agentId, a.status, COUNT(a)
+			    FROM Assignment a
+			    GROUP BY a.agentId, a.status
+			""")
+	List<Object[]> getAllAgentWorkload();
 
 }
