@@ -52,14 +52,10 @@ public class AuthServiceImpl implements AuthService {
 		user.setActive(true);
 
 		userRepository.save(user);
-		
-		//here afte saving this event is done where it placees it in rabbt queue
-		NotificationEvent event = new NotificationEvent(
-		        "USER_CREATED",
-		        user.getEmail(),
-		        "Welcome",
-		        "Hello " + user.getName() + ", your account is ready."
-		);
+
+		// here afte saving this event is done where it placees it in rabbt queue
+		NotificationEvent event = new NotificationEvent("USER_CREATED", user.getEmail(), "Welcome",
+				"Hello " + user.getName() + ", your account is ready.");
 
 		publisher.publish(event, "user.created");
 
@@ -74,7 +70,11 @@ public class AuthServiceImpl implements AuthService {
 			throw new RuntimeException("Invalid credentials");
 		}
 
-		String token =jwtutils.generateToken(user.getUserId(), user.getRole().getName().name(),user.getName(),user.getEmail());
+		if (!user.isActive()) {
+			throw new RuntimeException("Your account is deactivated. Please contact admin.");
+		}
+		String token = jwtutils.generateToken(user.getUserId(), user.getRole().getName().name(), user.getName(),
+				user.getEmail());
 		return new LoginResponse(token);
 	}
 
@@ -110,9 +110,26 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public UserInfoResponse getUsersById(String userId) {
 		// TODO Auto-generated method stub
-		Users user=userRepository.findById(userId).orElseThrow(()->new RuntimeException("No USer FOund"));
-		
+		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("No USer FOund"));
+
 		return new UserInfoResponse(user.getUserId(), user.getEmail(), user.getName(), user.getRole().getName());
+	}
+
+	@Override
+	public void activateDeactivateUser(String userId, Boolean active) {
+		// TODO Auto-generated method stub
+		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+		if(user.isActive()) {
+			if(active) {
+				throw new RuntimeException("User Already in Active State");
+			}
+		}else {
+			if(!active) {
+				throw new RuntimeException("User Already  Deactivated");
+			}
+		}
+		user.setActive(active);
+		userRepository.save(user);
 	}
 
 }

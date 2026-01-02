@@ -22,4 +22,6 @@ public interface AuthService {
 	List<AllUsersResponse> getAllUsers();
 
 	UserInfoResponse getUsersById(String userId);
+
+	void activateDeactivateUser(String userId, Boolean active);
 }

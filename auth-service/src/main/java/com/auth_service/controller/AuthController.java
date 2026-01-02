@@ -1,6 +1,7 @@
 package com.auth_service.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,5 +57,13 @@ public class AuthController {
 	@GetMapping("/getEmail/{userId}")
 	public ResponseEntity<UserInfoResponse> getByUserId(@PathVariable String userId){
 		return ResponseEntity.ok(authService.getUsersById(userId));
+	}
+	
+	
+	//for deactivating users
+	@PutMapping("/deactivate/{userId}")
+	public ResponseEntity<Void> deactivateUser(@PathVariable String userId,@RequestBody Map<String,Boolean> request){
+		authService.activateDeactivateUser(userId, request.get("active"));
+		return  ResponseEntity.noContent().build();
 	}
 }
