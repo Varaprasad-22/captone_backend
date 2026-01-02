@@ -70,8 +70,8 @@ public class TicketServiceImpl implements TickerService {
 				attachmentRepository.saveAll(attachments);
 		}
 
-		NotificationEvent event = new NotificationEvent("TICKET_CREATED", userEmail, "Ticket Created",
-				"Ticket '" + ticket.getTitle() + "' has been created."+ "\n With the ticket id as "+saved.getTicketId());
+		NotificationEvent event = new NotificationEvent("TICKET_CREATED", userEmail, "Ticket Created", "Ticket '"
+				+ ticket.getTitle() + "' has been created." + "\n With the ticket id as " + saved.getTicketId());
 
 		publisher.publish(event, "ticket.created");
 		return "Ticket Created Succesfully" + saved.getTicketId();
@@ -80,17 +80,14 @@ public class TicketServiceImpl implements TickerService {
 	@Override
 	public void updateStatus(String ticketId, TicketStatus status) {
 		// TODO Auto-generated method stub
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-        ticket.setStatus(status);
-        ticket.setUpdatedAt(LocalDateTime.now());
+		ticket.setStatus(status);
+		ticket.setUpdatedAt(LocalDateTime.now());
 
-        ticketRepository.save(ticket);
-        if(TicketStatus.ASSIGNED!=status)
-        assignmentClient.updateSlaFromTicket(
-                new TicketStatusUpdateRequest(ticketId, status)
-            );
+		ticketRepository.save(ticket);
+		if (TicketStatus.ASSIGNED != status)
+			assignmentClient.updateSlaFromTicket(new TicketStatusUpdateRequest(ticketId, status));
 	}
 
 	@Override
@@ -105,4 +102,37 @@ public class TicketServiceImpl implements TickerService {
 		return ticketRepository.findByCreatedByUserId(userId);
 	}
 
+	@Override
+	public List<TicketResponse> getAllTickets() {
+		// TODO Auto-generated method stub
+		return ticketRepository.findAll().stream().map(ticket -> {
+			TicketResponse response = new TicketResponse();
+			response.setTicketId(ticket.getTicketId());
+			response.setTitle(ticket.getTitle());
+			response.setDescription(ticket.getDescription());
+			response.setStatus(ticket.getStatus());
+			response.setPriority(ticket.getPriority());
+			response.setCreatedAt(ticket.getCreatedAt());
+			response.setCategory(ticket.getCategory());
+			response.setCreatedByUserId(ticket.getCreatedByUserId());
+			response.setAssignedAgentId(ticket.getAssignedAgentId());
+			response.setCreatedAt(ticket.getCreatedAt());
+			response.setUpdatedAt(ticket.getUpdatedAt());
+			return response;
+		}).toList();
+	}
+
+	// see since from db we get ticket we wanted ticket Response
+//	private TicketResponse mapToResponse(Ticket	ticket) {
+//		return TicketResponse.builder()
+//				.ticketId(ticket.getTicketId())
+//				 .title(ticket.getTitle())
+//		         .description(ticket.getDescription())
+//		         .status(ticket.getStatus())
+//		         .priority(ticket.getPriority())
+//		         .createdAt(ticket.getCreatedAt())
+//		         .updatedAt(ticket.getUpdatedAt())
+//		         .assignedAgentId(ticket.getAssignedAgentId())
+//				.build();
+//	}
 }
