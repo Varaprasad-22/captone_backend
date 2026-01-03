@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.assignmentService.client.AuthClient;
 import com.assignmentService.client.TicketClient;
 import com.assignmentService.dto.NotificationEvent;
 import com.assignmentService.dto.UpdateTicketStatusRequest;
@@ -30,7 +31,7 @@ public class SlaSchedular {
 	private final NotificationPublisher publisher;
 	private final SlaEventRepository slaEventRepository;
 	private final TicketClient ticketClient;
-
+	private final AuthClient authClient;
 //	runs every 60 secs timer
 	// see this one aims so if not responded within response time it shows of
 	// escalation
@@ -52,6 +53,8 @@ public class SlaSchedular {
 //            no response,response crosssed
 				if (!sla.isEscalated() && sla.getRespondedAt() == null && now.isAfter(sla.getResponseDeadline())) {
 
+					String managerId = assignment.getAssignedBy();
+					String managerEmail = authClient.getUserById(managerId).getEmail();
 					sla.setEscalated(true);
 
 					updated = true;
@@ -62,11 +65,17 @@ public class SlaSchedular {
 					ticketClient.updateTicketStatus(sla.getTicketId(),
 							new UpdateTicketStatusRequest(SlaStatus.ESCALATED));
 
+					//getting notified for each things email 
+					publisher.publish(new NotificationEvent("SLA_ESCALATED", managerEmail,
+							"SLA Escalation", "Ticket " + sla.getTicketId() + " SLA escalated"), "sla.escalated");
+					slaRepo.save(sla);
 				}
 
 //            breach checks like not resolved and dead line crossed even if escalaton true also
 				if (sla.getResolvedAt() == null && now.isAfter(sla.getResolutionDeadline())) {
 
+					String managerId = assignment.getAssignedBy();
+					String managerEmail = authClient.getUserById(managerId).getEmail();
 					sla.setBreached(true);
 					updated = true;
 
@@ -77,25 +86,17 @@ public class SlaSchedular {
 							assignment.getAgentId(), "ESCALATED", LocalDateTime.now(), "Response SLA crossed"));
 
 					// this is for updating in ticket service
+					//getting notified for each things email 
+					publisher.publish(new NotificationEvent("SLA_BREACHED", managerEmail,
+							"SLA Breached", "Ticket " + sla.getTicketId() + " SLA Breached"), "sla.breached");
 
 					ticketClient.updateTicketStatus(sla.getTicketId(),
 							new UpdateTicketStatusRequest(SlaStatus.BREACHED));
+					slaRepo.save(sla);
 				}
 
 //            prevent unnecesary db writes per minute
-				if (updated) {
-
-					if (sla.isBreached()) {
-						publisher.publish(new NotificationEvent("SLA_BREACHED", "virupavaraprasad22@gmail.com",
-								"SLA Breached", "Ticket " + sla.getTicketId() + " SLA Breached"), "sla.breached");
-					}
-					if (sla.isEscalated()) {
-						publisher.publish(new NotificationEvent("SLA_ESCALATED", "virupavaraprasad22@gmail.com",
-								"SLA Escalation", "Ticket " + sla.getTicketId() + " SLA escalated"), "sla.escalated");
-					}
-
-					slaRepo.save(sla);
-				}
+				
 			}
 		}
 	}
