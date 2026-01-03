@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.client.AssignmentClient;
 import com.ticker_service.client.AuthClient;
+import com.ticker_service.dto.AttachmentResponse;
 import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.NotificationEvent;
@@ -199,6 +200,60 @@ public class TicketServiceImpl implements TickerService {
 				}
 				).toList();
 	}
+
+	@Override
+	public TicketResponse viewTicket(String ticketId) {
+		// TODO Auto-generated method stub
+		return ticketRepository.findById(ticketId).map(ticket -> {
+			TicketResponse response = new TicketResponse();
+			response.setTicketId(ticket.getTicketId());
+			response.setTitle(ticket.getTitle());
+			response.setDescription(ticket.getDescription());
+			response.setStatus(ticket.getStatus());
+			response.setPriority(ticket.getPriority());
+			response.setCreatedAt(ticket.getCreatedAt());
+			response.setCategory(ticket.getCategory());
+			response.setCreatedByUserId(ticket.getCreatedByUserId());
+			response.setAssignedAgentId(ticket.getAssignedAgentId());
+			response.setCreatedAt(ticket.getCreatedAt());
+			response.setUpdatedAt(ticket.getUpdatedAt());
+			return response;
+		}).orElse(null);
+	}
+	
+	  public List<AttachmentResponse> getAttachmentsByTicketId(String ticketId) {
+	        return attachmentRepository.findByTicketId(ticketId).stream()
+	                .map(attachment -> {
+	                    AttachmentResponse response = new AttachmentResponse();
+	                    response.setId(attachment.getId());
+	                    response.setFileName(attachment.getFileName());
+	                    response.setFileType(attachment.getFileType());
+	                    response.setFileUrl(attachment.getFileUrl());
+	                    response.setTicketId(attachment.getTicketId());
+	                    response.setUploadedBy(attachment.getUploadedBy());
+	                    response.setUploadedAt(attachment.getUploadedAt());
+	                    return response;
+	                })
+	                .toList();
+	    }
+
+
+	  public AttachmentResponse getAttachmentById(String id) {
+		    return attachmentRepository.findById(id)
+		            .map(attachment -> {
+		                AttachmentResponse response = new AttachmentResponse();
+		                response.setId(attachment.getId());
+		                response.setFileName(attachment.getFileName());
+		                response.setFileType(attachment.getFileType());
+		                response.setFileUrl(attachment.getFileUrl());
+		                response.setTicketId(attachment.getTicketId());
+		                response.setUploadedBy(attachment.getUploadedBy());
+		                response.setUploadedAt(attachment.getUploadedAt());
+		                return response;
+		            })
+		            .orElseThrow(() -> new RuntimeException("Attachment not found"));
+		}
+
 
 	// see since from db we get ticket we wanted ticket Response
 //	private TicketResponse mapToResponse(Ticket	ticket) {

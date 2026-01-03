@@ -5,6 +5,7 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ticker_service.dto.AttachmentResponse;
 import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
@@ -38,4 +39,10 @@ public interface TickerService {
 
 
 	List<CommentResponse> getComments(String ticketId);
+
+
+	TicketResponse viewTicket(String ticketId);
+
+
+	List<AttachmentResponse> getAttachmentsByTicketId(String ticketId);
 }

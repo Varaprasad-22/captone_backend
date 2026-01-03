@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.dto.AddCommentRequest;
+import com.ticker_service.dto.AttachmentResponse;
 import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
@@ -91,4 +92,18 @@ public class TicketController {
 	public ResponseEntity<List<CommentResponse>> getComments(@PathVariable String ticketId){
 		return ResponseEntity.ok().body(ticketService.getComments(ticketId));
 	}
+	
+	@GetMapping("/{ticketId}/getTicket")
+	public ResponseEntity<TicketResponse> viewASpecificTicket(@PathVariable String ticketId) {
+		return ResponseEntity.ok().body(ticketService.viewTicket(ticketId));
+	}
+	@GetMapping("/{ticketId}/attachments")
+    public ResponseEntity<List<AttachmentResponse>> getAttachments(
+			@PathVariable String ticketId) {
+
+        return ResponseEntity.ok(
+        		ticketService.getAttachmentsByTicketId(ticketId)
+        );
+    }
+	
 }
