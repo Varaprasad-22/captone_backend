@@ -65,15 +65,15 @@ public class JwtAuthenticationFilter implements GatewayFilter {
             return exchange.getResponse().setComplete();
         }
 
-        // 🔒 RBAC decision
+        // RBAC decision
         Mono<Void> rbacResult = rbacFilter.authorize(exchange, claims);
 
-        // ⛔ IMPORTANT: if RBAC completed response, STOP
+        // IMPORTANT: if RBAC completed response, STOP
         if (exchange.getResponse().isCommitted()) {
             return rbacResult;
         }
 
-        // ✅ Allowed → forward request
+        //  Allowed → forward request
         ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                 .header("X-USER-ID", claims.getSubject())
                 .header("X-ROLE", claims.get("role", String.class))

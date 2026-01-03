@@ -1,9 +1,14 @@
 package com.ticker_service.controller;
 
+//import java.net.http.HttpHeaders;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -106,4 +111,19 @@ public class TicketController {
         );
     }
 	
+	@GetMapping("/attachments/view/{attachmentId}")
+	public ResponseEntity<Resource> viewAttachment(@PathVariable String attachmentId)
+	        throws Exception {
+
+	    AttachmentResponse attachment = ticketService.getAttachmentById(attachmentId);
+
+	    Path filePath = Paths.get(attachment.getFileUrl());
+	    Resource resource = new UrlResource(filePath.toUri());
+
+	    return ResponseEntity.ok()
+	            .contentType(MediaType.parseMediaType(attachment.getFileType()))
+	            .header(HttpHeaders.CONTENT_DISPOSITION,
+	                    "inline; filename=\"" + attachment.getFileName() + "\"")
+	            .body(resource);
+	}
 }

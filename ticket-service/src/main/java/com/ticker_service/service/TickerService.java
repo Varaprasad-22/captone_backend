@@ -45,4 +45,7 @@ public interface TickerService {
 
 
 	List<AttachmentResponse> getAttachmentsByTicketId(String ticketId);
+
+
+	AttachmentResponse getAttachmentById(String attachmentId);
 }
