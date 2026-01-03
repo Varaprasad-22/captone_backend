@@ -73,5 +73,11 @@ public class AssignmentController {
 	    );
 	    return ResponseEntity.ok().build();
 	}
+	
+	//for internal communications
+	@GetMapping("/internal/{ticketId}/getManagerId")
+	public ResponseEntity<String> getManagerId(@PathVariable String ticketId){
+		return ResponseEntity.ok().body(assignmentService.getManagerId(ticketId));
+	}
 
 }

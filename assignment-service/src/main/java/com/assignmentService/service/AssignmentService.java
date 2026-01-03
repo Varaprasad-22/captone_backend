@@ -19,5 +19,7 @@ public interface AssignmentService {
 
 	 List<AgentStatusCount> getAllAgentsWorkload();
 
-	 String  reassign(String assignedBy, @Valid ReAssignment request); 
+	 String  reassign(String assignedBy, @Valid ReAssignment request);
+
+	 String getManagerId(String ticketId); 
 }

@@ -1,5 +1,4 @@
-package com.assignmentService.dto;
-
+package com.ticker_service.dto;
 
 import lombok.Data;
 

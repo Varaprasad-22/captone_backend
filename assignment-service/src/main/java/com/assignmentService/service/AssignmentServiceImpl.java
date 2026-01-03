@@ -17,6 +17,9 @@ import com.assignmentService.dto.ReAssignment;
 import com.assignmentService.dto.UpdateAssignedAgent;
 import com.assignmentService.dto.UpdateTicketStatusRequest;
 import com.assignmentService.dto.UserInfoResponse;
+import com.assignmentService.exception.AgentUnavailableException;
+import com.assignmentService.exception.AssignmentAlreadyExistsException;
+import com.assignmentService.exception.AssignmentNotFoundException;
 import com.assignmentService.model.Assignment;
 import com.assignmentService.model.Priority;
 import com.assignmentService.model.Sla;
@@ -48,8 +51,14 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 		// okay if we retry to assign same ticket to others it show errror
 		assignmentRepo.findByTicketId(req.getTicketId()).ifPresent(a -> {
-			throw new RuntimeException("Ticket is already assigned to an agent");
+			throw new AssignmentAlreadyExistsException("Ticket is already assigned to an agent");
 		});
+
+		UserInfoResponse agent = authClient.getUserById(req.getAgentId());
+
+		if (agent == null || !agent.isActive()) {
+			throw new AgentUnavailableException("Selected agent is not available");
+		}
 
 		Assignment assign = new Assignment();
 		assign.setTicketId(req.getTicketId());
@@ -61,11 +70,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 		assign.setAssignmentId(UUID.randomUUID().toString());
 
 		Assignment saved = assignmentRepo.save(assign);
-		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId(),saved.getPriority()));
+		ticketClient.updateUserId(saved.getTicketId(),
+				new UpdateAssignedAgent(saved.getAgentId(), saved.getPriority()));
 		slaService.createSla(saved);
 
 		// get the email via feing client from auth db and send it to email
-		UserInfoResponse agent = authClient.getUserById(req.getAgentId());
+
 
 		NotificationEvent event = new NotificationEvent("ASSIGNMENT_CREATED", agent.getEmail(), "New Ticket Assigned",
 				"You have been assigned ticket " + saved.getTicketId());
@@ -97,7 +107,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	public String reassign(String assignedBy, ReAssignment request) {
 		// TODO Auto-generated method stub
 		Assignment oldAssignment = assignmentRepo.findByTicketId(request.getTicketId())
-				.orElseThrow(() -> new RuntimeException("No Ticlet Found"));
+				.orElseThrow(() -> new AssignmentNotFoundException("No Ticket Found"));
 		oldAssignment.setStatus(SlaStatus.REASSIGNED);
 		assignmentRepo.save(oldAssignment);
 
@@ -113,8 +123,15 @@ public class AssignmentServiceImpl implements AssignmentService {
 		newAssignment.setPriority(oldAssignment.getPriority());
 		newAssignment.setStatus(SlaStatus.ACTIVE);
 		Assignment saved = assignmentRepo.save(newAssignment);
-		ticketClient.updateUserId(saved.getTicketId(), new UpdateAssignedAgent(saved.getAgentId(),saved.getPriority()));
+		ticketClient.updateUserId(saved.getTicketId(),
+				new UpdateAssignedAgent(saved.getAgentId(), saved.getPriority()));
 		slaService.createSla(newAssignment);
 		return newAssignment.getAssignmentId();
+	}
+
+	@Override
+	public String getManagerId(String ticketId) {
+	    Assignment assignment =assignmentRepo.findByTicketId(ticketId).orElseThrow(()->new AssignmentNotFoundException("No corresponding ticketId"));
+		return assignment.getAssignedBy();
 	}
 }

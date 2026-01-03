@@ -3,6 +3,7 @@ package com.auth_service.service;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
 
 import com.auth_service.dto.AdminCreationRequest;
 import com.auth_service.dto.AllUsersResponse;
@@ -24,4 +25,6 @@ public interface AuthService {
 	UserInfoResponse getUsersById(String userId);
 
 	void activateDeactivateUser(String userId, Boolean active);
+
+	public Page<AllUsersResponse> getAllUsers(int page, int size, String sortBy, String direction);
 }

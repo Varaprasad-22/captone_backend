@@ -1,6 +1,9 @@
 package com.ticker_service.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -12,4 +15,7 @@ public interface AssignmentClient {
 
 	@PutMapping("/assignments/internal/sla/update-from-ticket")
 	void updateSlaFromTicket(@RequestBody  TicketStatusUpdateRequest request);
+	
+	@GetMapping("/internal/{ticketId}/getManagerId")
+	public ResponseEntity<String> getManagerId(@PathVariable String ticketId);
 }

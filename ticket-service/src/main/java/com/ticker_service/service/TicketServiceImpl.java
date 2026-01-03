@@ -10,12 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.client.AssignmentClient;
+import com.ticker_service.client.AuthClient;
 import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.NotificationEvent;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.TicketStatusUpdateRequest;
 import com.ticker_service.dto.UpdateAssignedAgent;
+import com.ticker_service.dto.UserInfoResponse;
+import com.ticker_service.exceptions.InvalidTicketstateException;
+import com.ticker_service.exceptions.TicketNotFoundException;
 import com.ticker_service.model.Attachment;
 import com.ticker_service.model.Comment;
 import com.ticker_service.model.Priority;
@@ -42,6 +46,8 @@ public class TicketServiceImpl implements TickerService {
 	private AssignmentClient assignmentClient;
 	@Autowired
 	private CommentRepository commentRepo;
+	@Autowired
+	private AuthClient authClient;
 
 	@Override
 	public String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId,
@@ -88,12 +94,33 @@ public class TicketServiceImpl implements TickerService {
 	@Override
 	public void updateStatus(String ticketId, TicketStatus status) {
 		// TODO Auto-generated method stub
-		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 
+		if(!TicketStatus.contains(status)) {
+			throw new InvalidTicketstateException("see State is not listed");
+		}
 		ticket.setStatus(status);
 		ticket.setUpdatedAt(LocalDateTime.now());
 
 		ticketRepository.save(ticket);
+		UserInfoResponse userdetails=authClient.getUserById(ticket.getCreatedByUserId());
+		String userEmail=userdetails.getEmail();
+		
+
+		//if escalated manager gets notified and user gets notifications too on each change of status
+		if(status==TicketStatus.ESCALATED) {
+			String managerId=assignmentClient.getManagerId(ticketId).getBody();
+			UserInfoResponse managerDetails=authClient.getUserById(managerId);
+			String managerEmail=managerDetails.getEmail();
+			
+			NotificationEvent event = new NotificationEvent("TICKET_ESCALATED", managerEmail, "Ticket Created", "Ticket '"
+					+ ticket.getTitle() + "' has been created." + "\n With the ticket id as " + ticketId);
+
+		}
+		NotificationEvent event = new NotificationEvent("TICKET_STATUS_UPDATED", userEmail, "Ticket Created", "Ticket '"
+				+ ticket.getTitle() + "' has been created." + "\n With the ticket id as " + ticketId);
+
+		publisher.publish(event, "ticket.Updates");
 		if (TicketStatus.ASSIGNED != status)
 			assignmentClient.updateSlaFromTicket(new TicketStatusUpdateRequest(ticketId, status));
 	}
@@ -134,7 +161,7 @@ public class TicketServiceImpl implements TickerService {
 	public void updateAgentId(String ticketId, @Valid UpdateAssignedAgent request) {
 		// TODO Auto-generated method stub
 		Ticket existingTicket = ticketRepository.findById(ticketId)
-				.orElseThrow(() -> new RuntimeException("Ticket not found"));
+				.orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 		existingTicket.setAssignedAgentId(request.getAgentId());
 		existingTicket.setUpdatedAt(LocalDateTime.now());
 		existingTicket.setPriority(request.getPriority());
@@ -144,7 +171,7 @@ public class TicketServiceImpl implements TickerService {
 	@Override
 	public void addComment(String ticketId, String authorId, String text, boolean internal) {
 		// TODO Auto-generated method stub
-		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 
 		Comment comment = new Comment();
 		comment.setCommentId(UUID.randomUUID().toString());

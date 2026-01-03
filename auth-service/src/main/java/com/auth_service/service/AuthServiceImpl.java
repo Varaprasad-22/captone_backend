@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,12 @@ import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.NotificationEvent;
 import com.auth_service.dto.RegisterRequest;
 import com.auth_service.dto.UserInfoResponse;
+import com.auth_service.exception.CannotCreateRoleException;
+import com.auth_service.exception.InvalidCredentialsException;
+import com.auth_service.exception.RoleNotFoundException;
+import com.auth_service.exception.UserAlreadyExistsException;
+import com.auth_service.exception.UserDisabledException;
+import com.auth_service.exception.UserNotFoundException;
 import com.auth_service.model.Erole;
 import com.auth_service.model.Role;
 import com.auth_service.model.Users;
@@ -37,11 +46,11 @@ public class AuthServiceImpl implements AuthService {
 	public void register(RegisterRequest request) {
 
 		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-			throw new RuntimeException("User already exists");
+			throw new UserAlreadyExistsException("User already exists");
 		}
 
 		Role role = roleRepository.findByName(Erole.ROLE_USER)
-				.orElseThrow(() -> new RuntimeException("Role not found"));
+				.orElseThrow(() -> new RoleNotFoundException("Role not found"));
 
 		Users user = new Users();
 		user.setUserId(UUID.randomUUID().toString());
@@ -67,11 +76,11 @@ public class AuthServiceImpl implements AuthService {
 				.orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new RuntimeException("Invalid credentials");
+			throw new InvalidCredentialsException("Invalid credentials");
 		}
 
 		if (!user.isActive()) {
-			throw new RuntimeException("Your account is deactivated. Please contact admin.");
+			throw new UserDisabledException("Your account is deactivated. Please contact admin.");
 		}
 		String token = jwtutils.generateToken(user.getUserId(), user.getRole().getName().name(), user.getName(),
 				user.getEmail());
@@ -81,14 +90,14 @@ public class AuthServiceImpl implements AuthService {
 	public void adminCreateUser(AdminCreationRequest request) {
 
 		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-			throw new RuntimeException("User already exists");
+			throw new UserAlreadyExistsException("User already exists");
 		}
 		if (request.getRole() == Erole.ROLE_ADMIN) {
-			throw new RuntimeException("Cannot create ADMIN users");
+			throw new CannotCreateRoleException("Cannot create ADMIN users");
 		}
 
 		Role role = roleRepository.findByName(request.getRole())
-				.orElseThrow(() -> new RuntimeException("Role not found"));
+				.orElseThrow(() -> new RoleNotFoundException("Role not found"));
 
 		Users user = new Users();
 		user.setUserId(UUID.randomUUID().toString());
@@ -110,26 +119,42 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public UserInfoResponse getUsersById(String userId) {
 		// TODO Auto-generated method stub
-		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("No USer FOund"));
+		Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("No USer FOund"));
 
-		return new UserInfoResponse(user.getUserId(), user.getEmail(), user.getName(), user.getRole().getName());
+		return new UserInfoResponse(user.getUserId(), user.getEmail(), user.getName(), user.isActive(),
+				user.getRole().getName());
 	}
 
 	@Override
 	public void activateDeactivateUser(String userId, Boolean active) {
 		// TODO Auto-generated method stub
-		Users user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-		if(user.isActive()) {
-			if(active) {
-				throw new RuntimeException("User Already in Active State");
+		Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+		if("ROLE_ADMIN".equals(user.getRole().getName().name())) {
+			throw new UserDisabledException("You cannot disable an user");
+		}
+		if (user.isActive()) {
+			if (active) {
+				throw new UserDisabledException("User Already in Active State");
 			}
-		}else {
-			if(!active) {
-				throw new RuntimeException("User Already  Deactivated");
+		} else {
+			if (!active) {
+				throw new UserDisabledException("User Already  Deactivated");
 			}
 		}
 		user.setActive(active);
 		userRepository.save(user);
+	}
+
+	@Override
+	public Page<AllUsersResponse> getAllUsers(int page, int size, String sortBy, String direction) {
+		// TODO Auto-generated method stub
+
+		Sort sort = direction.equalsIgnoreCase("DESC") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+		PageRequest pageable = PageRequest.of(page, size, sort);
+
+		return userRepository.findAll(pageable).map(user -> new AllUsersResponse(user.getUserId(), user.getName(),
+				user.getEmail(), user.getRole().getName(), user.isActive()));
 	}
 
 }
