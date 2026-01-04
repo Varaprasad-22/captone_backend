@@ -66,11 +66,18 @@ public class TicketController {
 		return ResponseEntity.ok().body(ticketService.getAllOpenTickets());
 	}
 
+	//for user tickets
 	@GetMapping("/{userId}/getTickets")
 	public ResponseEntity<List<TicketResponse>> getPerUserTickets(@PathVariable String userId) {
 		return ResponseEntity.ok().body(ticketService.getPerUserTickets(userId));
 	}
 
+	//for allocated agent tickets
+	@GetMapping("/{agentId}/getAgentTickets")
+	public ResponseEntity<List<TicketResponse>> getAgentAllotedTickets(@PathVariable String agentId) {
+		return ResponseEntity.ok().body(ticketService.getAgentAllotedTickets(agentId));
+	}
+	
 	@GetMapping("/getAllTickets")
 	public ResponseEntity<List<TicketResponse>> getAllTickets() {
 		return ResponseEntity.ok().body(ticketService.getAllTickets());

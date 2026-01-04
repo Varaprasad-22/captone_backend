@@ -254,6 +254,12 @@ public class TicketServiceImpl implements TickerService {
 		            .orElseThrow(() -> new RuntimeException("Attachment not found"));
 		}
 
+	  @Override
+	  public List<TicketResponse> getAgentAllotedTickets(String agentId) {
+		// TODO Auto-generated method stub
+		  return ticketRepository.findByAssignedAgentId(agentId);
+	  }
+
 
 	// see since from db we get ticket we wanted ticket Response
 //	private TicketResponse mapToResponse(Ticket	ticket) {

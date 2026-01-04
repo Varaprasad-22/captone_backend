@@ -48,4 +48,7 @@ public interface TickerService {
 
 
 	AttachmentResponse getAttachmentById(String attachmentId);
+
+
+	List<TicketResponse> getAgentAllotedTickets(String agentId);
 }

@@ -19,4 +19,6 @@ public interface TicketRepository extends MongoRepository<Ticket, String> {
 
 	List<TicketResponse> findByCreatedByUserId(String userId);
 
+	List<TicketResponse> findByAssignedAgentId(String agentId);
+
 }
