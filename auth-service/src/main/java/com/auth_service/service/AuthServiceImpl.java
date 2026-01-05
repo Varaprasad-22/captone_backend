@@ -116,7 +116,6 @@ public class AuthServiceImpl implements AuthService {
 		return userRepository.findAll().stream().map(user -> new AllUsersResponse(user.getUserId(), user.getName(),
 				user.getEmail(), user.getRole().getName(), user.isActive())).toList();
 	}
-	
 
 	@Override
 	public UserInfoResponse getUsersById(String userId) {
@@ -158,41 +157,25 @@ public class AuthServiceImpl implements AuthService {
 		return userRepository.findAll(pageable).map(user -> new AllUsersResponse(user.getUserId(), user.getName(),
 				user.getEmail(), user.getRole().getName(), user.isActive()));
 	}
-	
 
-    @Override
-    public Page<AllUsersResponse> getUsersByRole(
-            String role,
-            int page,
-            int size,
-            String sortBy,
-            String direction
-    ) {
+	@Override
+	public Page<AllUsersResponse> getUsersByRole(String role, int page, int size, String sortBy, String direction) {
 
-        Sort sort = direction.equalsIgnoreCase("DESC")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
+		Sort sort = direction.equalsIgnoreCase("DESC") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Erole erole;
-        try {
-            erole = Erole.valueOf(role);
-        } catch (IllegalArgumentException e) {
-            throw new RoleNotFoundException("Invalid role: " + role);
-        }
+		Pageable pageable = PageRequest.of(page, size, sort);
+		Erole erole;
+		try {
+			erole = Erole.valueOf(role);
+		} catch (IllegalArgumentException e) {
+			throw new RoleNotFoundException("Invalid role: " + role);
+		}
 
+		Page<Users> usersPage = userRepository.findByRole_Name(erole, pageable);
 
-        Page<Users> usersPage = userRepository.findByRole_Name(erole, pageable);
-
-        return usersPage.map(user -> new AllUsersResponse(
-                user.getUserId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole().getName(), 
-                user.isActive()
-        ));
-    }
-
+		return usersPage.map(user -> new AllUsersResponse(user.getUserId(), user.getName(), user.getEmail(),
+				user.getRole().getName(), user.isActive()));
+	}
 
 	public Page<AllUsersResponse> getAllAgents(int page, int size, String sortBy, String direction) {
 		// TODO Auto-generated method stub
@@ -202,8 +185,36 @@ public class AuthServiceImpl implements AuthService {
 		PageRequest pageable = PageRequest.of(page, size, sort);
 
 		// "ROLE_AGENT" to the custom repository method
-		return userRepository.findByRole_Name(Erole.ROLE_AGENT, pageable).map(user -> new AllUsersResponse(user.getUserId(),
-				user.getName(), user.getEmail(), user.getRole().getName(), user.isActive()));
+		return userRepository.findByRole_Name(Erole.ROLE_AGENT, pageable)
+				.map(user -> new AllUsersResponse(user.getUserId(), user.getName(), user.getEmail(),
+						user.getRole().getName(), user.isActive()));
+	}
+
+	@Override
+	public void updateUserRole(String userId, Erole newRole) {
+
+		Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+		// Do not allow changing ADMIN role
+		if (user.getRole().getName() == Erole.ROLE_ADMIN) {
+			throw new CannotCreateRoleException("Cannot modify ADMIN role");
+		}
+
+		// Prevent setting ADMIN role
+		if (newRole == Erole.ROLE_ADMIN) {
+			throw new CannotCreateRoleException("Cannot assign ADMIN role");
+		}
+
+		Role roleEntity = roleRepository.findByName(newRole)
+				.orElseThrow(() -> new RoleNotFoundException("Role not found"));
+
+		// Same role check
+		if (user.getRole().getName() == newRole) {
+			throw new IllegalStateException("User already has this role");
+		}
+
+		user.setRole(roleEntity);
+		userRepository.save(user);
 	}
 
 }

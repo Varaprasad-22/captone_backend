@@ -11,5 +11,6 @@ import com.assignmentService.model.SlaEvent;
 @Repository
 public interface SlaEventRepository extends JpaRepository<SlaEvent, Long> {
 
-	List<SlaEventResponse> findByAgentId(String agentId);
+	List<SlaEvent> findByAgentId(String agentId);
+	
 }

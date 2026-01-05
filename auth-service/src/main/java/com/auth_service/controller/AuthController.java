@@ -21,6 +21,7 @@ import com.auth_service.dto.AllUsersResponse;
 import com.auth_service.dto.LoginRequest;
 import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.RegisterRequest;
+import com.auth_service.dto.UpdateUserRoleRequest;
 import com.auth_service.dto.UserInfoResponse;
 import com.auth_service.service.AuthService;
 
@@ -90,4 +91,15 @@ public class AuthController {
 		authService.activateDeactivateUser(userId, request.get("active"));
 		return ResponseEntity.noContent().build();
 	}
+	
+	//roles chagne
+
+    @PutMapping("/users/{userId}/role")
+    public ResponseEntity<Void> updateUserRole(
+            @PathVariable String userId,
+            @RequestBody UpdateUserRoleRequest request
+    ) {
+        authService.updateUserRole(userId, request.getRole());
+        return ResponseEntity.noContent().build();
+    }
 }

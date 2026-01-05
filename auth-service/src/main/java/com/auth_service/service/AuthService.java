@@ -11,6 +11,7 @@ import com.auth_service.dto.LoginRequest;
 import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.RegisterRequest;
 import com.auth_service.dto.UserInfoResponse;
+import com.auth_service.model.Erole;
 import com.auth_service.model.Users;
 
 public interface AuthService {
@@ -32,4 +33,6 @@ public interface AuthService {
 	public Page<AllUsersResponse> getAllAgents(int page, int size, String sortBy, String direction);
 
 	public Page<AllUsersResponse> getUsersByRole(String role, int page, int size, String sortBy, String direction);
+
+	void updateUserRole(String userId, Erole role);
 }
