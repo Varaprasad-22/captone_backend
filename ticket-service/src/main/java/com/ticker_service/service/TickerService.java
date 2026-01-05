@@ -10,6 +10,7 @@ import com.ticker_service.dto.CommentResponse;
 import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
+import com.ticker_service.dto.UserDashboardResponse;
 import com.ticker_service.model.Comment;
 import com.ticker_service.model.TicketStatus;
 
@@ -51,4 +52,7 @@ public interface TickerService {
 
 
 	List<TicketResponse> getAgentAllotedTickets(String agentId);
+	
+	//for dashboards
+    UserDashboardResponse getUserDashboard(String userId);
 }

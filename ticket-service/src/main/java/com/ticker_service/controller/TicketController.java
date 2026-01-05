@@ -29,6 +29,7 @@ import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.dto.UpdateTicketStatusRequest;
+import com.ticker_service.dto.UserDashboardResponse;
 import com.ticker_service.model.Comment;
 import com.ticker_service.service.TickerService;
 
@@ -132,5 +133,16 @@ public class TicketController {
 	            .header(HttpHeaders.CONTENT_DISPOSITION,
 	                    "inline; filename=\"" + attachment.getFileName() + "\"")
 	            .body(resource);
+	}
+	
+	
+	//for the daashboards
+	@GetMapping("/my/dashboard")
+	public ResponseEntity<UserDashboardResponse> getUserDashboard(
+	        @RequestHeader("X-USER-ID") String userId) {
+
+	    return ResponseEntity.ok(
+	            ticketService.getUserDashboard(userId)
+	    );
 	}
 }

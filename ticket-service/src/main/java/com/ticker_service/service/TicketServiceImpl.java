@@ -18,6 +18,7 @@ import com.ticker_service.dto.NotificationEvent;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.TicketStatusUpdateRequest;
 import com.ticker_service.dto.UpdateAssignedAgent;
+import com.ticker_service.dto.UserDashboardResponse;
 import com.ticker_service.dto.UserInfoResponse;
 import com.ticker_service.exceptions.InvalidTicketstateException;
 import com.ticker_service.exceptions.TicketNotFoundException;
@@ -266,6 +267,38 @@ public class TicketServiceImpl implements TickerService {
 	  }
 
 
+	  //for the user dashboards
+	  @Override
+	    public UserDashboardResponse getUserDashboard(String userId) {
+
+		  long total = ticketRepository.countByCreatedByUserId(userId);
+
+		  long open = ticketRepository.countByCreatedByUserIdAndStatus(
+		          userId, TicketStatus.OPEN
+		  );
+
+		  long inProgress = ticketRepository.countByCreatedByUserIdAndStatus(
+		          userId, TicketStatus.INPROGRESS
+		  );
+
+		  long assigned = ticketRepository.countByCreatedByUserIdAndAssignedAgentIdIsNotNull(
+		          userId
+		  );
+
+		  long closed = ticketRepository.countByCreatedByUserIdAndStatusIn(
+		          userId,
+		          List.of(TicketStatus.RESOLVED, TicketStatus.CLOSED)
+		  );
+
+
+	        return new UserDashboardResponse(
+	                total,
+	                open,
+	                inProgress,
+	                assigned,
+	                closed
+	        );
+	    }
 	// see since from db we get ticket we wanted ticket Response
 //	private TicketResponse mapToResponse(Ticket	ticket) {
 //		return TicketResponse.builder()
