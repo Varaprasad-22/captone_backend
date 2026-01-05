@@ -106,8 +106,10 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Transactional
 	public String reassign(String assignedBy, ReAssignment request) {
 		// TODO Auto-generated method stub
-		Assignment oldAssignment = assignmentRepo.findByTicketId(request.getTicketId())
-				.orElseThrow(() -> new AssignmentNotFoundException("No Ticket Found"));
+		Assignment oldAssignment = assignmentRepo.findAllByTicketIdOrderByAssignedAtDesc(request.getTicketId())
+		        .stream()
+		        .findFirst()
+		        .orElseThrow(() -> new AssignmentNotFoundException("No Ticket Found"));
 		oldAssignment.setStatus(SlaStatus.REASSIGNED);
 		assignmentRepo.save(oldAssignment);
 

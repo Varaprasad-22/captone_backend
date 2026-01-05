@@ -32,5 +32,14 @@ public interface AssignmentRepository extends JpaRepository<Assignment, String> 
 	List<Object[]> getAllAgentWorkload();
 
 	Optional<Assignment> findByTicketId(String ticketId);
+	
+	@Query("""
+		    SELECT a
+		    FROM Assignment a
+		    WHERE a.ticketId = :ticketId
+		    ORDER BY a.assignedAt DESC
+		""")
+		List<Assignment> findAllByTicketIdOrderByAssignedAtDesc(@Param("ticketId") String ticketId);
+
 
 }

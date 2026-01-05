@@ -52,7 +52,7 @@ public class SlaSchedular {
 //            like if not escalated already 
 //            no response,response crosssed
 				if (!sla.isEscalated() && sla.getRespondedAt() == null && now.isAfter(sla.getResponseDeadline())) {
-
+					 try {
 					String managerId = assignment.getAssignedBy();
 					String managerEmail = authClient.getByUserId(managerId).getEmail();
 					sla.setEscalated(true);
@@ -69,11 +69,20 @@ public class SlaSchedular {
 					publisher.publish(new NotificationEvent("SLA_ESCALATED", managerEmail,
 							"SLA Escalation", "Ticket " + sla.getTicketId() + " SLA escalated"), "sla.escalated");
 					slaRepo.save(sla);
+					 } catch (Exception e) {
+                         System.err.println(
+                                 "Escalation failed for ticket "
+                                         + sla.getTicketId()
+                                         + " : "
+                                         + e.getMessage()
+                         );
+                     }
 				}
 
 //            breach checks like not resolved and dead line crossed even if escalaton true also
 				if (sla.getResolvedAt() == null && now.isAfter(sla.getResolutionDeadline())) {
 
+					   try {
 					String managerId = assignment.getAssignedBy();
 					String managerEmail = authClient.getByUserId(managerId).getEmail();
 					sla.setBreached(true);
@@ -93,6 +102,14 @@ public class SlaSchedular {
 					ticketClient.updateTicketStatus(sla.getTicketId(),
 							new UpdateTicketStatusRequest(SlaStatus.BREACHED));
 					slaRepo.save(sla);
+					   } catch (Exception e) {
+                           System.err.println(
+                                   "Breach handling failed for ticket "
+                                           + sla.getTicketId()
+                                           + " : "
+                                           + e.getMessage()
+                           );
+                       }
 				}
 
 //            prevent unnecesary db writes per minute
