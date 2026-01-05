@@ -10,5 +10,5 @@ import com.assignmentService.dto.UserInfoResponse;
 public interface AuthClient {
 
 	@GetMapping("/auth/getEmail/{userId}")
-	UserInfoResponse getUserById(@PathVariable String userId);
+	UserInfoResponse getByUserId(@PathVariable String userId);
 }

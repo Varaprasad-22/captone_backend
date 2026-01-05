@@ -54,7 +54,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 			throw new AssignmentAlreadyExistsException("Ticket is already assigned to an agent");
 		});
 
-		UserInfoResponse agent = authClient.getUserById(req.getAgentId());
+		UserInfoResponse agent = authClient.getByUserId(req.getAgentId());
 
 		if (agent == null || !agent.isActive()) {
 			throw new AgentUnavailableException("Selected agent is not available");

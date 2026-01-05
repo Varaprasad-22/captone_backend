@@ -122,14 +122,14 @@ public class AuthServiceImpl implements AuthService {
 		Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("No USer FOund"));
 
 		return new UserInfoResponse(user.getUserId(), user.getEmail(), user.getName(), user.isActive(),
-				user.getRole().getName());
+				user.getRole().getName().name());
 	}
 
 	@Override
 	public void activateDeactivateUser(String userId, Boolean active) {
 		// TODO Auto-generated method stub
 		Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-		if("ROLE_ADMIN".equals(user.getRole().getName().name())) {
+		if ("ROLE_ADMIN".equals(user.getRole().getName().name())) {
 			throw new UserDisabledException("You cannot disable an user");
 		}
 		if (user.isActive()) {
@@ -155,6 +155,18 @@ public class AuthServiceImpl implements AuthService {
 
 		return userRepository.findAll(pageable).map(user -> new AllUsersResponse(user.getUserId(), user.getName(),
 				user.getEmail(), user.getRole().getName(), user.isActive()));
+	}
+
+	public Page<AllUsersResponse> getAllAgents(int page, int size, String sortBy, String direction) {
+		// TODO Auto-generated method stub
+
+		Sort sort = direction.equalsIgnoreCase("DESC") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+		PageRequest pageable = PageRequest.of(page, size, sort);
+
+		// "ROLE_AGENT" to the custom repository method
+		return userRepository.findByRole_Name(Erole.ROLE_AGENT, pageable).map(user -> new AllUsersResponse(user.getUserId(),
+				user.getName(), user.getEmail(), user.getRole().getName(), user.isActive()));
 	}
 
 }

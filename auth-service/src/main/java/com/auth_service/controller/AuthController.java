@@ -63,6 +63,14 @@ public class AuthController {
 		return ResponseEntity.ok(authService.getAllUsers(page, size, sortBy, direction));
 	}
 
+	@GetMapping("/getAgents")
+	public ResponseEntity<Page<AllUsersResponse>> getAllAgents(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "role.name") String sortBy,
+			@RequestParam(defaultValue = "ASC") String direction) {
+		return ResponseEntity.ok(authService.getAllAgents(page, size, sortBy, direction));
+	}
+	
+	
 	// this is for internal services to assignment service
 	@GetMapping("/getEmail/{userId}")
 	public ResponseEntity<UserInfoResponse> getByUserId(@PathVariable String userId) {

@@ -27,4 +27,7 @@ public interface AuthService {
 	void activateDeactivateUser(String userId, Boolean active);
 
 	public Page<AllUsersResponse> getAllUsers(int page, int size, String sortBy, String direction);
+	
+
+	public Page<AllUsersResponse> getAllAgents(int page, int size, String sortBy, String direction);
 }

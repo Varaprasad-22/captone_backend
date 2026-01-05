@@ -54,7 +54,7 @@ public class SlaSchedular {
 				if (!sla.isEscalated() && sla.getRespondedAt() == null && now.isAfter(sla.getResponseDeadline())) {
 
 					String managerId = assignment.getAssignedBy();
-					String managerEmail = authClient.getUserById(managerId).getEmail();
+					String managerEmail = authClient.getByUserId(managerId).getEmail();
 					sla.setEscalated(true);
 
 					updated = true;
@@ -75,7 +75,7 @@ public class SlaSchedular {
 				if (sla.getResolvedAt() == null && now.isAfter(sla.getResolutionDeadline())) {
 
 					String managerId = assignment.getAssignedBy();
-					String managerEmail = authClient.getUserById(managerId).getEmail();
+					String managerEmail = authClient.getByUserId(managerId).getEmail();
 					sla.setBreached(true);
 					updated = true;
 

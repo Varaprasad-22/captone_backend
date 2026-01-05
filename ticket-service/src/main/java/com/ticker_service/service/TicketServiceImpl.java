@@ -104,26 +104,30 @@ public class TicketServiceImpl implements TickerService {
 		ticket.setUpdatedAt(LocalDateTime.now());
 
 		ticketRepository.save(ticket);
-		UserInfoResponse userdetails=authClient.getUserById(ticket.getCreatedByUserId());
+		UserInfoResponse userdetails=authClient.getByUserId(ticket.getCreatedByUserId());
 		String userEmail=userdetails.getEmail();
 		
 
 		//if escalated manager gets notified and user gets notifications too on each change of status
 		if(status==TicketStatus.ESCALATED) {
 			String managerId=assignmentClient.getManagerId(ticketId).getBody();
-			UserInfoResponse managerDetails=authClient.getUserById(managerId);
+			UserInfoResponse managerDetails=authClient.getByUserId(managerId);
 			String managerEmail=managerDetails.getEmail();
 			
-			NotificationEvent event = new NotificationEvent("TICKET_ESCALATED", managerEmail, "Ticket Created", "Ticket '"
-					+ ticket.getTitle() + "' has been created." + "\n With the ticket id as " + ticketId);
+			NotificationEvent event = new NotificationEvent("TICKET_ESCALATED", managerEmail, "Ticket escalated", "Ticket '"
+					+ ticket.getTitle() + "' has escalated of ticketId " + ticketId);
 
 		}
-		NotificationEvent event = new NotificationEvent("TICKET_STATUS_UPDATED", userEmail, "Ticket Created", "Ticket '"
-				+ ticket.getTitle() + "' has been created." + "\n With the ticket id as " + ticketId);
+		NotificationEvent event = new NotificationEvent("TICKET_STATUS_UPDATED", userEmail, "Ticket status update", "Ticket '"
+				+ ticket.getTitle() + "' has updated the status." + "\n of ticket id " + ticketId);
 
 		publisher.publish(event, "ticket.Updates");
-		if (TicketStatus.ASSIGNED != status)
-			assignmentClient.updateSlaFromTicket(new TicketStatusUpdateRequest(ticketId, status));
+		if (status != TicketStatus.ASSIGNED) {
+		    assignmentClient.updateSlaFromTicket(
+		        new TicketStatusUpdateRequest(ticketId, status)
+		    );
+		}
+
 	}
 
 	@Override
