@@ -32,7 +32,7 @@ public class RoleBasedAuthorizationFilter {
         Map.entry("PUT:/tickets/*/status", List.of(ADMIN, MANAGER, AGENT)),
         Map.entry("GET:/tickets/getAllOpenTickets", List.of(ADMIN, MANAGER)),
         Map.entry("GET:/tickets/*/getTickets", List.of(USER, ADMIN, MANAGER)),
-        Map.entry("GET:/tickets/getAllTickets", List.of(ADMIN)),
+        Map.entry("GET:/tickets/getAllTickets", List.of(ADMIN,MANAGER)),
         Map.entry("GET:/tickets/attachments/view/*", List.of(USER, ADMIN, MANAGER,AGENT)),
 
         Map.entry("GET: /tickets/*/getAgentTickets", List.of(ADMIN, MANAGER,AGENT)),

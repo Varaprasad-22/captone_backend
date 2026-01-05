@@ -16,6 +16,6 @@ public interface AssignmentClient {
 	@PutMapping("/assignments/internal/sla/update-from-ticket")
 	void updateSlaFromTicket(@RequestBody  TicketStatusUpdateRequest request);
 	
-	@GetMapping("/internal/{ticketId}/getManagerId")
+	@GetMapping("/assignments/internal/{ticketId}/getManagerId")
 	public ResponseEntity<String> getManagerId(@PathVariable String ticketId);
 }

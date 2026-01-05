@@ -169,6 +169,7 @@ public class TicketServiceImpl implements TickerService {
 				.orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 		existingTicket.setAssignedAgentId(request.getAgentId());
 		existingTicket.setUpdatedAt(LocalDateTime.now());
+		existingTicket.setStatus(TicketStatus.ASSIGNED);
 		existingTicket.setPriority(request.getPriority());
 		ticketRepository.save(existingTicket);
 	}
