@@ -26,6 +26,7 @@ public class RoleBasedAuthorizationFilter {
         Map.entry("POST:/auth/admin/register", List.of(ADMIN)),
         Map.entry("GET:/auth/getAll", List.of(ADMIN)),
         Map.entry("PUT:/auth/deactivate", List.of(ADMIN)),
+        Map.entry("PUT:/auth/users/*", List.of(ADMIN)),
 
         // TICKETS
         Map.entry("POST:/tickets/create", List.of(USER)),

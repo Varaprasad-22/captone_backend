@@ -69,8 +69,15 @@ public class AuthController {
 			@RequestParam(defaultValue = "ASC") String direction) {
 		return ResponseEntity.ok(authService.getAllAgents(page, size, sortBy, direction));
 	}
-	
-	
+
+	// get users by role
+	@GetMapping("/users/{role}")
+	public ResponseEntity<Page<AllUsersResponse>> getUsers(@PathVariable String role,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "name") String sortBy, @RequestParam(defaultValue = "ASC") String direction) {
+		return ResponseEntity.ok(authService.getUsersByRole(role, page, size, sortBy, direction));
+	}
+
 	// this is for internal services to assignment service
 	@GetMapping("/getEmail/{userId}")
 	public ResponseEntity<UserInfoResponse> getByUserId(@PathVariable String userId) {

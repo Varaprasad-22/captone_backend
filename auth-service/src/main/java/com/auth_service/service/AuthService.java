@@ -30,4 +30,6 @@ public interface AuthService {
 	
 
 	public Page<AllUsersResponse> getAllAgents(int page, int size, String sortBy, String direction);
+
+	public Page<AllUsersResponse> getUsersByRole(String role, int page, int size, String sortBy, String direction);
 }

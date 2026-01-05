@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -115,6 +116,7 @@ public class AuthServiceImpl implements AuthService {
 		return userRepository.findAll().stream().map(user -> new AllUsersResponse(user.getUserId(), user.getName(),
 				user.getEmail(), user.getRole().getName(), user.isActive())).toList();
 	}
+	
 
 	@Override
 	public UserInfoResponse getUsersById(String userId) {
@@ -156,6 +158,41 @@ public class AuthServiceImpl implements AuthService {
 		return userRepository.findAll(pageable).map(user -> new AllUsersResponse(user.getUserId(), user.getName(),
 				user.getEmail(), user.getRole().getName(), user.isActive()));
 	}
+	
+
+    @Override
+    public Page<AllUsersResponse> getUsersByRole(
+            String role,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+
+        Sort sort = direction.equalsIgnoreCase("DESC")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Erole erole;
+        try {
+            erole = Erole.valueOf(role);
+        } catch (IllegalArgumentException e) {
+            throw new RoleNotFoundException("Invalid role: " + role);
+        }
+
+
+        Page<Users> usersPage = userRepository.findByRole_Name(erole, pageable);
+
+        return usersPage.map(user -> new AllUsersResponse(
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().getName(), 
+                user.isActive()
+        ));
+    }
+
 
 	public Page<AllUsersResponse> getAllAgents(int page, int size, String sortBy, String direction) {
 		// TODO Auto-generated method stub
