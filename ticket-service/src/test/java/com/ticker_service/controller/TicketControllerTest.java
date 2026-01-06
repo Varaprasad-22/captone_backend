@@ -2,9 +2,12 @@ package com.ticker_service.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -142,4 +146,53 @@ class TicketControllerTest {
 
 		mockMvc.perform(get("/tickets/my/dashboard").header("X-USER-ID", "user123")).andExpect(status().isOk());
 	}
+	
+	@Test
+	void viewAttachment_success() throws Exception {
+
+	    // create a temp file
+	    Path tempFile = Files.createTempFile("test-attachment", ".txt");
+	    Files.writeString(tempFile, "sample file content");
+
+	    AttachmentResponse attachment = new AttachmentResponse();
+	    attachment.setId("A1");
+	    attachment.setFileName("test.txt");
+	    attachment.setFileType("text/plain");
+	    attachment.setFileUrl(tempFile.toString());
+
+	    when(ticketService.getAttachmentById("A1"))
+	            .thenReturn(attachment);
+
+	    mockMvc.perform(
+	            get("/tickets/attachments/view/{attachmentId}", "A1")
+	    )
+	    .andExpect(status().isOk())
+	    .andExpect(header().string(
+	            HttpHeaders.CONTENT_DISPOSITION,
+	            "inline; filename=\"test.txt\""
+	    ))
+	    .andExpect(content().string("sample file content"));
+	}
+
+	@Test
+	void getAttachments_success() throws Exception {
+
+	    AttachmentResponse attachment = new AttachmentResponse();
+	    attachment.setId("A1");
+	    attachment.setFileName("file.txt");
+	    attachment.setFileType("text/plain");
+	    attachment.setFileUrl("/tmp/file.txt");
+	    attachment.setTicketId("T1");
+
+	    when(ticketService.getAttachmentsByTicketId("T1"))
+	            .thenReturn(List.of(attachment));
+
+	    mockMvc.perform(
+	            get("/tickets/{ticketId}/attachments", "T1")
+	    )
+	    .andExpect(status().isOk())
+	    .andExpect(jsonPath("$[0].id").value("A1"))
+	    .andExpect(jsonPath("$[0].fileName").value("file.txt"));
+	}
+
 }
