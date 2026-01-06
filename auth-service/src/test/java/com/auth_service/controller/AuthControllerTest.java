@@ -87,6 +87,7 @@ class AuthControllerTest {
         request.setName("Admin");
         request.setEmail("admin@test.com");
         request.setPassword("admin123");
+        request.setRole(Erole.ROLE_ADMIN);
 
         mockMvc.perform(
                 post("/auth/admin/register")
@@ -117,10 +118,9 @@ class AuthControllerTest {
     @Test
     void getAllAgents_success() throws Exception {
 
-        Page<AllUsersResponse> page = Page.empty();
 
         when(authService.getAllAgents(anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(page);
+                .thenReturn(Page.empty());
 
         mockMvc.perform(get("/auth/getAgents"))
                 .andExpect(status().isOk());
