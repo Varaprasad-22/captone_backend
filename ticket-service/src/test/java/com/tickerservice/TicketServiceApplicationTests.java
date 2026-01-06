@@ -1,4 +1,4 @@
-package com.ticker_service;
+package com.tickerservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

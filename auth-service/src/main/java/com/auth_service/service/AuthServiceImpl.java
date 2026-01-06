@@ -36,15 +36,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 	
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	
-	private RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 	
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 	
-	private JwtUtil jwtutils;
+	private  final JwtUtil jwtutils;
 
-	private NotificationPublisher publisher;
+	private final NotificationPublisher publisher;
 
 	public void register(RegisterRequest request) {
 

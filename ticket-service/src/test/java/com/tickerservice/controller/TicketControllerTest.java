@@ -1,4 +1,4 @@
-package com.ticker_service.controller;
+package com.tickerservice.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

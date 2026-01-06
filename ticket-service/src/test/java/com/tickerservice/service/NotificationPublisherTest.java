@@ -1,4 +1,4 @@
-package com.ticker_service.service;
+package com.tickerservice.service;
 
 import static org.mockito.Mockito.verify;
 

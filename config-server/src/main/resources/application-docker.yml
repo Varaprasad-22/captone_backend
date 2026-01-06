@@ -1,0 +1,23 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Varaprasad-22/Capstone_Configserver
+          default-label: main
+          clone-on-start: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:9090/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true

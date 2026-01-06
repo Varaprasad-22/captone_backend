@@ -1,0 +1,39 @@
+server:
+  port: 9091
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+
+        - id: assignment-service
+          uri: lb://ASSIGNMENT-SERVICE
+          predicates:
+            - Path=/assignments/**,/sla-events/**
+
+        - id: ticket-service
+          uri: lb://TICKET-SERVICE
+          predicates:
+            - Path=/tickets/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:9090/eureka
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123
+  expiration: 3600000
