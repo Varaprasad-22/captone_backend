@@ -538,5 +538,28 @@ class AuthServiceImplTest {
 	     verify(jwtUtil, never()).generateToken(any(), any(), any(), any());
 	 }
 
+	 @Test
+	 void getAllAgents_shouldThrowException_whenUserRoleIsNull() {
+
+	     Users user = new Users();
+	     user.setUserId("U1");
+	     user.setName("Agent");
+	     user.setEmail("agent@test.com");
+	     user.setActive(true);
+	     user.setRole(null); 
+
+	     Page<Users> usersPage = new PageImpl<>(List.of(user));
+
+	     when(userRepository.findByRole_Name(
+	             eq(Erole.ROLE_AGENT),
+	             any(PageRequest.class)
+	     )).thenReturn(usersPage);
+
+	     assertThrows(
+	             NullPointerException.class,
+	             () -> authService.getAllAgents(0, 10, "name", "ASC")
+	     );
+	 }
+
 }
 
