@@ -314,6 +314,36 @@ class TicketServiceImplTest {
 	    assertEquals("T1", responses.get(0).getTicketId());
 	}
 
+	@Test
+	void createTicket_validFile_shouldSaveAttachment() {
 
+	    CreateTicketRequest request = new CreateTicketRequest(
+	            "Login issue",
+	            "Unable to login into system",
+	            TicketCategory.SOFTWARE
+	    );
+
+	    MultipartFile file = mock(MultipartFile.class);
+	    when(file.isEmpty()).thenReturn(false);
+	    when(file.getOriginalFilename()).thenReturn("test.txt");
+	    when(file.getContentType()).thenReturn("text/plain");
+	    when(fileStorageService.save(file)).thenReturn("/path/test.txt");
+
+	    Ticket savedTicket = new Ticket();
+	    savedTicket.setTicketId("T1");
+
+	    when(ticketRepository.save(any(Ticket.class)))
+	            .thenReturn(savedTicket);
+
+	    ticketService.createTicket(
+	            request,
+	            List.of(file),
+	            "user1",
+	            "user@test.com"
+	    );
+
+	    verify(fileStorageService).save(file);
+	    verify(attachmentRepository).saveAll(anyList());
+	}
 
 }
