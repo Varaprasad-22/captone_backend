@@ -215,5 +215,15 @@ class TicketServiceImplTest {
         assertEquals(1, dashboard.getClosed());
     }
     
-    
+    @Test
+    void getAgentAllotedTickets_success() {
+
+        when(ticketRepository.findByAssignedAgentId("agent1"))
+                .thenReturn(List.of(new TicketResponse()));
+
+        List<TicketResponse> tickets =
+                ticketService.getAgentAllotedTickets("agent1");
+
+        assertEquals(1, tickets.size());
+    }
 }
