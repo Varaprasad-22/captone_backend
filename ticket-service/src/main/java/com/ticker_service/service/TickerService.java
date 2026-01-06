@@ -55,4 +55,7 @@ public interface TickerService {
 	
 	//for dashboards
     UserDashboardResponse getUserDashboard(String userId);
+
+
+	List<TicketResponse> getAgentResolvedTickets(String agentId);
 }

@@ -21,18 +21,17 @@ public interface TicketRepository extends MongoRepository<Ticket, String> {
 	List<TicketResponse> findByCreatedByUserId(String userId);
 
 	List<TicketResponse> findByAssignedAgentId(String agentId);
-	
-	//for the dashboards sake
 
-	 long countByCreatedByUserId(String userId);
+	List<TicketResponse> findByAssignedAgentIdAndStatusIn(String agentId, List<TicketStatus> statuses);
 
-	    long countByCreatedByUserIdAndStatus(String userId, TicketStatus status);
+	// for the dashboards sake
 
-	    long countByCreatedByUserIdAndAssignedAgentIdIsNotNull(String userId);
+	long countByCreatedByUserId(String userId);
 
-	    long countByCreatedByUserIdAndStatusIn(
-	            String userId,
-	            List<TicketStatus> statuses
-	    );
+	long countByCreatedByUserIdAndStatus(String userId, TicketStatus status);
+
+	long countByCreatedByUserIdAndAssignedAgentIdIsNotNull(String userId);
+
+	long countByCreatedByUserIdAndStatusIn(String userId, List<TicketStatus> statuses);
 
 }

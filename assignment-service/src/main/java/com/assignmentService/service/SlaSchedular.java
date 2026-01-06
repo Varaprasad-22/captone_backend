@@ -36,7 +36,7 @@ public class SlaSchedular {
 	// see this one aims so if not responded within response time it shows of
 	// escalation
 	// if not resolved with in time it shows breached
-	@Scheduled(fixedRate = 60000)
+	@Scheduled(fixedRate = 60000000)
 	public void checkBreaches() {
 
 		LocalDateTime now = LocalDateTime.now();

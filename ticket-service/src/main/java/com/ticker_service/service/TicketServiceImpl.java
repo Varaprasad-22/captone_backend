@@ -2,6 +2,7 @@ package com.ticker_service.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -265,7 +266,13 @@ public class TicketServiceImpl implements TickerService {
 		// TODO Auto-generated method stub
 		  return ticketRepository.findByAssignedAgentId(agentId);
 	  }
+	  public List<TicketResponse> getAgentResolvedTickets(String agentId) {
+		    List<TicketStatus> resolvedStatuses = Arrays.asList(TicketStatus.RESOLVED, TicketStatus.CLOSED);
 
+		    List<TicketResponse> tickets = ticketRepository.findByAssignedAgentIdAndStatusIn(agentId, resolvedStatuses);
+
+		    return tickets;
+	  }
 
 	  //for the user dashboards
 	  @Override

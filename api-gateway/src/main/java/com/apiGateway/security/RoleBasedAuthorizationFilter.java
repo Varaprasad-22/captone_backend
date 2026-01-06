@@ -41,7 +41,7 @@ public class RoleBasedAuthorizationFilter {
         Map.entry("POST:/assignments/assign", List.of(MANAGER)),
         Map.entry("GET:/assignments/agents/*/workload", List.of(ADMIN, MANAGER, AGENT)),
         Map.entry("GET:/assignments/manager/workload", List.of(ADMIN, MANAGER)),
-        Map.entry("POST:/assignments/reassign", List.of(MANAGER)),
+        Map.entry("POST:/assignments/reassign", List.of(MANAGER,ADMIN)),
         
         // SLA EVENTS
         Map.entry("GET:/sla-events", List.of(ADMIN, MANAGER))
