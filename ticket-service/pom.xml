@@ -129,14 +129,13 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.11</version>
             <executions>
-                <!-- Attach JaCoCo agent -->
+           
                 <execution>
                     <goals>
                         <goal>prepare-agent</goal>
                     </goals>
                 </execution>
 
-                <!-- Generate report -->
                 <execution>
                     <id>report</id>
                     <phase>verify</phase>
