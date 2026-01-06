@@ -246,4 +246,45 @@ class AuthServiceImplTest {
 
 		verify(userRepository).save(user);
 	}
+	@Test
+	void getAllUsers_success() {
+
+	    Role role = new Role();
+	    role.setName(Erole.ROLE_USER);
+
+	    Users user1 = new Users();
+	    user1.setUserId("U1");
+	    user1.setName("User One");
+	    user1.setEmail("user1@test.com");
+	    user1.setRole(role);
+	    user1.setActive(true);
+
+	    Users user2 = new Users();
+	    user2.setUserId("U2");
+	    user2.setName("User Two");
+	    user2.setEmail("user2@test.com");
+	    user2.setRole(role);
+	    user2.setActive(false);
+
+	    when(userRepository.findAll())
+	            .thenReturn(List.of(user1, user2));
+
+	    List<AllUsersResponse> result = authService.getAllUsers();
+
+	    assertEquals(2, result.size());
+
+	    AllUsersResponse first = result.get(0);
+	    assertEquals("U1", first.getUserId());
+	    assertEquals("User One", first.getName());
+	    assertEquals("user1@test.com", first.getEmail());
+	    assertEquals(Erole.ROLE_USER, first.getRole());
+	    assertTrue(first.isActive());
+
+	    AllUsersResponse second = result.get(1);
+	    assertEquals("U2", second.getUserId());
+	    assertFalse(second.isActive());
+
+	    verify(userRepository).findAll();
+	}
+
 }
