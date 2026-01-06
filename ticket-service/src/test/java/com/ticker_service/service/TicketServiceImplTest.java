@@ -260,6 +260,60 @@ class TicketServiceImplTest {
 	    verify(ticketRepository).save(ticket);
 	}
 
+	@Test
+	void getAttachmentById_notFound() {
+
+	    when(attachmentRepository.findById("A1"))
+	            .thenReturn(Optional.empty());
+
+	    RuntimeException ex = assertThrows(
+	            RuntimeException.class,
+	            () -> ticketService.getAttachmentById("A1")
+	    );
+
+	    assertEquals("Attachment not found", ex.getMessage());
+	}
 	
+	@Test
+	void getAttachmentById_success() {
+
+	    Attachment attachment = new Attachment();
+	    attachment.setId("A1");
+	    attachment.setFileName("file.txt");
+
+	    when(attachmentRepository.findById("A1"))
+	            .thenReturn(Optional.of(attachment));
+
+	    AttachmentResponse response =
+	            ticketService.getAttachmentById("A1");
+
+	    assertNotNull(response);
+	    assertEquals("A1", response.getId());
+	}
+
+	@Test
+	void getAttachmentsByTicketId_success() {
+
+	    Attachment attachment = new Attachment();
+	    attachment.setId("A1");
+	    attachment.setFileName("file.txt");
+	    attachment.setFileType("text/plain");
+	    attachment.setFileUrl("/path/file.txt");
+	    attachment.setTicketId("T1");
+	    attachment.setUploadedBy("user1");
+	    attachment.setUploadedAt(LocalDateTime.now());
+
+	    when(attachmentRepository.findByTicketId("T1"))
+	            .thenReturn(List.of(attachment));
+
+	    List<AttachmentResponse> responses =
+	            ticketService.getAttachmentsByTicketId("T1");
+
+	    assertEquals(1, responses.size());
+	    assertEquals("file.txt", responses.get(0).getFileName());
+	    assertEquals("T1", responses.get(0).getTicketId());
+	}
+
+
 
 }
