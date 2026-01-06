@@ -1,7 +1,5 @@
 package com.ticker_service.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -24,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tickerservice.controller.TicketController;
 import com.tickerservice.dto.*;
-import com.tickerservice.model.TicketCategory;
 import com.tickerservice.model.TicketStatus;
 import com.tickerservice.service.TickerService;
 

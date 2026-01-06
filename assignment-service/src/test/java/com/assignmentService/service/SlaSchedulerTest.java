@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +16,9 @@ import org.mockito.MockitoAnnotations;
 import com.assignmentservice.client.AuthClient;
 import com.assignmentservice.client.TicketClient;
 import com.assignmentservice.dto.NotificationEvent;
-import com.assignmentservice.dto.UpdateTicketStatusRequest;
 import com.assignmentservice.dto.UserInfoResponse;
 import com.assignmentservice.model.Assignment;
 import com.assignmentservice.model.Sla;
-import com.assignmentservice.model.SlaEvent;
 import com.assignmentservice.model.SlaStatus;
 import com.assignmentservice.repositories.AssignmentRepository;
 import com.assignmentservice.repositories.SlaEventRepository;

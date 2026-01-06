@@ -21,7 +21,6 @@ import com.assignmentservice.dto.*;
 import com.assignmentservice.exception.*;
 import com.assignmentservice.model.Assignment;
 import com.assignmentservice.model.Priority;
-import com.assignmentservice.model.SlaStatus;
 import com.assignmentservice.repositories.AssignmentRepository;
 import com.assignmentservice.repositories.SlaRepository;
 import com.assignmentservice.service.AssignmentServiceImpl;
