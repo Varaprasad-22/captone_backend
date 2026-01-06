@@ -468,5 +468,43 @@ class AuthServiceImplTest {
 
 	    assertEquals("User Already  Deactivated", ex.getMessage());
 	}
+	@Test
+	void getUsersByRole_invalidRole_shouldThrowRoleNotFoundException() {
 
+	    String invalidRole = "INVALID_ROLE";
+	  
+	    RoleNotFoundException ex = assertThrows(
+	            RoleNotFoundException.class,
+	            () -> authService.getUsersByRole(
+	                    invalidRole,
+	                    0,
+	                    10,
+	                    "name",
+	                    "ASC"
+	            )
+	    );
+
+	    assertEquals("Invalid role: " + invalidRole, ex.getMessage());
+
+	    verifyNoInteractions(userRepository);
+	}
+
+	 @Test
+	    void adminCreateUser_shouldThrowException_whenUserAlreadyExists() {
+
+	        AdminCreationRequest request = new AdminCreationRequest();
+	        request.setEmail("admin@test.com");
+
+	        when(userRepository.findByEmail("admin@test.com"))
+	                .thenReturn(Optional.of(new Users()));
+
+	        assertThrows(
+	                UserAlreadyExistsException.class,
+	                () -> authService.adminCreateUser(request)
+	        );
+
+	        
+	        verify(userRepository, never()).save(any());
+	        verify(roleRepository, never()).findByName(any());
+	    }
 }

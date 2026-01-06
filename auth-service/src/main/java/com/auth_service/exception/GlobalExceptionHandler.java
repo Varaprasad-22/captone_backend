@@ -3,8 +3,10 @@ package com.auth_service.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@ControllerAdvice
 public class GlobalExceptionHandler {
 	// if user not found
 	@ExceptionHandler(UserNotFoundException.class)
