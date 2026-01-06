@@ -20,7 +20,7 @@ public class NotificationListener {
 	private final EmailService emailService;
 	private final NotificationRepository notificationRepo;
 
-	@RabbitListener(queues = RabbitConfig.Queue)
+	@RabbitListener(queues = RabbitConfig.QUEUE)
 	public void consume(NotificationEvent event) {
 		
 		//this is for saving it to db 

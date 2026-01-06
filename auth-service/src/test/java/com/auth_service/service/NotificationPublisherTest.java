@@ -40,6 +40,6 @@ class NotificationPublisherTest {
         notificationPublisher.publish(event, routingKey);
 
         verify(rabbitTemplate)
-                .convertAndSend(RabbitConfig.Exchange, routingKey, event);
+                .convertAndSend(RabbitConfig.EXCHANGE, routingKey, event);
     }
 }

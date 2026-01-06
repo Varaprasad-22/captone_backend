@@ -15,6 +15,6 @@ public class NotificationPublisher {
 	private final RabbitTemplate rabbitTemplate;
 
 	public void publish(NotificationEvent event, String routingKey) {
-		rabbitTemplate.convertAndSend(RabbitConfig.Exchange, routingKey, event);
+		rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE, routingKey, event);
 	}
 }

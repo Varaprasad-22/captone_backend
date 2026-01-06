@@ -9,21 +9,22 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 @Configuration
 public class RabbitConfig {
 
 //	see these are used for the rabbitmq to see or how it look like for us
-	public static final String Exchange = "notification.exchange";
-	public static final String Queue = "notification.email.queue";
+	public static final String EXCHANGE = "notification.exchange";
+	public static final String QUEUE = "notification.email.queue";
 
 	@Bean
 	public TopicExchange exchange() {
-		return new TopicExchange(Exchange);
+		return new TopicExchange(EXCHANGE);
 	}
 
 	@Bean
 	public Queue queue() {
-		return new Queue(Queue, true);
+		return new Queue(QUEUE, true);
 	}
 
 	@Bean

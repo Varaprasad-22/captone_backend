@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitConfig {
 
-	public static final String Exchange = "notification.exchange";
+	public static final String EXCHANGE = "notification.exchange";
 
 	@Bean
 	public TopicExchange exchange() {
-		return new TopicExchange(Exchange);
+		return new TopicExchange(EXCHANGE);
 	}
 
 	@Bean
