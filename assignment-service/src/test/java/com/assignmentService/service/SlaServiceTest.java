@@ -13,16 +13,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.assignmentService.model.Assignment;
-import com.assignmentService.model.Priority;
-import com.assignmentService.model.Sla;
-import com.assignmentService.model.SlaEvent;
-import com.assignmentService.model.SlaRule;
-import com.assignmentService.model.TicketStatus;
-import com.assignmentService.repositories.AssignmentRepository;
-import com.assignmentService.repositories.SlaEventRepository;
-import com.assignmentService.repositories.SlaRepository;
-import com.assignmentService.repositories.SlaRuleRepository;
+import com.assignmentservice.model.Assignment;
+import com.assignmentservice.model.Priority;
+import com.assignmentservice.model.Sla;
+import com.assignmentservice.model.SlaEvent;
+import com.assignmentservice.model.SlaRule;
+import com.assignmentservice.model.TicketStatus;
+import com.assignmentservice.repositories.AssignmentRepository;
+import com.assignmentservice.repositories.SlaEventRepository;
+import com.assignmentservice.repositories.SlaRepository;
+import com.assignmentservice.repositories.SlaRuleRepository;
+import com.assignmentservice.service.SlaService;
 
 class SlaServiceTest {
 

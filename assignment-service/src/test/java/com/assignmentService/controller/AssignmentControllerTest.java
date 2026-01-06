@@ -17,10 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.assignmentService.dto.*;
-import com.assignmentService.model.TicketStatus;
-import com.assignmentService.service.AssignmentService;
-import com.assignmentService.service.SlaService;
+import com.assignmentservice.controller.AssignmentController;
+import com.assignmentservice.dto.*;
+import com.assignmentservice.model.TicketStatus;
+import com.assignmentservice.service.AssignmentService;
+import com.assignmentservice.service.SlaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 class AssignmentControllerTest {

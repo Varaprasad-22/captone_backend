@@ -16,10 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import com.assignmentService.dto.SlaEventResponse;
-import com.assignmentService.model.SlaEvent;
-import com.assignmentService.repositories.SlaEventRepository;
-import com.assignmentService.service.SlaEventserviceImpl;
+import com.assignmentservice.dto.SlaEventResponse;
+import com.assignmentservice.model.SlaEvent;
+import com.assignmentservice.repositories.SlaEventRepository;
+import com.assignmentservice.service.SlaEventserviceImpl;
 
 class SlaEventserviceImplTest {
 

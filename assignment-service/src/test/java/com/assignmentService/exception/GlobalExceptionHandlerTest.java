@@ -14,6 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.*;
 
+import com.assignmentservice.exception.AgentUnavailableException;
+import com.assignmentservice.exception.AssignmentAlreadyExistsException;
+import com.assignmentservice.exception.AssignmentNotFoundException;
+import com.assignmentservice.exception.GlobalExceptionHandler;
+
 class GlobalExceptionHandlerTest {
 
     private MockMvc mockMvc;

@@ -15,15 +15,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.assignmentService.client.AuthClient;
-import com.assignmentService.client.TicketClient;
-import com.assignmentService.dto.*;
-import com.assignmentService.exception.*;
-import com.assignmentService.model.Assignment;
-import com.assignmentService.model.Priority;
-import com.assignmentService.model.SlaStatus;
-import com.assignmentService.repositories.AssignmentRepository;
-import com.assignmentService.repositories.SlaRepository;
+import com.assignmentservice.client.AuthClient;
+import com.assignmentservice.client.TicketClient;
+import com.assignmentservice.dto.*;
+import com.assignmentservice.exception.*;
+import com.assignmentservice.model.Assignment;
+import com.assignmentservice.model.Priority;
+import com.assignmentservice.model.SlaStatus;
+import com.assignmentservice.repositories.AssignmentRepository;
+import com.assignmentservice.repositories.SlaRepository;
+import com.assignmentservice.service.AssignmentServiceImpl;
+import com.assignmentservice.service.NotificationPublisher;
+import com.assignmentservice.service.SlaService;
 
 class AssignmentServiceImplTest {
 

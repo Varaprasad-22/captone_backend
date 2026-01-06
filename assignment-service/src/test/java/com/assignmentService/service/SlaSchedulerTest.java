@@ -14,18 +14,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.assignmentService.client.AuthClient;
-import com.assignmentService.client.TicketClient;
-import com.assignmentService.dto.NotificationEvent;
-import com.assignmentService.dto.UpdateTicketStatusRequest;
-import com.assignmentService.dto.UserInfoResponse;
-import com.assignmentService.model.Assignment;
-import com.assignmentService.model.Sla;
-import com.assignmentService.model.SlaEvent;
-import com.assignmentService.model.SlaStatus;
-import com.assignmentService.repositories.AssignmentRepository;
-import com.assignmentService.repositories.SlaEventRepository;
-import com.assignmentService.repositories.SlaRepository;
+import com.assignmentservice.client.AuthClient;
+import com.assignmentservice.client.TicketClient;
+import com.assignmentservice.dto.NotificationEvent;
+import com.assignmentservice.dto.UpdateTicketStatusRequest;
+import com.assignmentservice.dto.UserInfoResponse;
+import com.assignmentservice.model.Assignment;
+import com.assignmentservice.model.Sla;
+import com.assignmentservice.model.SlaEvent;
+import com.assignmentservice.model.SlaStatus;
+import com.assignmentservice.repositories.AssignmentRepository;
+import com.assignmentservice.repositories.SlaEventRepository;
+import com.assignmentservice.repositories.SlaRepository;
+import com.assignmentservice.service.NotificationPublisher;
+import com.assignmentservice.service.SlaSchedular;
 
 class SlaSchedulerTest {
 

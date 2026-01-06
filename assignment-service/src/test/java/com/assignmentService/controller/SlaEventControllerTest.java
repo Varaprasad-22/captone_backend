@@ -23,8 +23,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.assignmentService.dto.SlaEventResponse;
-import com.assignmentService.service.SlaEventService;
+import com.assignmentservice.controller.SlaEventController;
+import com.assignmentservice.dto.SlaEventResponse;
+import com.assignmentservice.service.SlaEventService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
