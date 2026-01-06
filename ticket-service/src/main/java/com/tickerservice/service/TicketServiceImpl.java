@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -97,7 +96,7 @@ public class TicketServiceImpl implements TickerService {
 
 	@Override
 	public void updateStatus(String ticketId, TicketStatus status) {
-		// TODO Auto-generated method stub
+		
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 
 		if(!TicketStatus.contains(status)) {
@@ -120,6 +119,7 @@ public class TicketServiceImpl implements TickerService {
 			NotificationEvent event = new NotificationEvent("TICKET_ESCALATED", managerEmail, "Ticket escalated", "Ticket '"
 					+ ticket.getTitle() + "' has escalated of ticketId " + ticketId);
 
+			publisher.publish(event, "ticket.Updates");
 		}
 		NotificationEvent event = new NotificationEvent("TICKET_STATUS_UPDATED", userEmail, "Ticket status update", "Ticket '"
 				+ ticket.getTitle() + "' has updated the status." + "\n of ticket id " + ticketId);
@@ -135,19 +135,19 @@ public class TicketServiceImpl implements TickerService {
 
 	@Override
 	public List<TicketResponse> getAllOpenTickets() {
-		// TODO Auto-generated method stub
+
 		return ticketRepository.findByStatus(TicketStatus.OPEN);
 	}
 
 	@Override
 	public List<TicketResponse> getPerUserTickets(String userId) {
-		// TODO Auto-generated method stub
+
 		return ticketRepository.findByCreatedByUserId(userId);
 	}
 
 	@Override
 	public List<TicketResponse> getAllTickets() {
-		// TODO Auto-generated method stub
+
 		return ticketRepository.findAll().stream().map(ticket -> {
 			TicketResponse response = new TicketResponse();
 			response.setTicketId(ticket.getTicketId());
@@ -167,7 +167,7 @@ public class TicketServiceImpl implements TickerService {
 
 	@Override
 	public void updateAgentId(String ticketId, @Valid UpdateAssignedAgent request) {
-		// TODO Auto-generated method stub
+
 		Ticket existingTicket = ticketRepository.findById(ticketId)
 				.orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 		existingTicket.setAssignedAgentId(request.getAgentId());
@@ -179,7 +179,7 @@ public class TicketServiceImpl implements TickerService {
 
 	@Override
 	public void addComment(String ticketId, String authorId, String text, boolean internal) {
-		// TODO Auto-generated method stub
+	
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 
 		Comment comment = new Comment();
@@ -188,14 +188,14 @@ public class TicketServiceImpl implements TickerService {
 		comment.setText(text);
 		comment.setInternal(internal);
 		comment.setCreatedAt(LocalDateTime.now());
-		comment.setTicketId(ticketId);
+		comment.setTicketId(ticket.getTicketId());
 		commentRepo.save(comment);
 
 	}
 
 	@Override
 	public List<CommentResponse> getComments(String ticketId) {
-		// TODO Auto-generated method stub
+	
 		return commentRepo.findAllByTicketId(ticketId).stream().map(comment->{
 				CommentResponse response=new CommentResponse();
 				response.setAuthorId(comment.getAuthorId());
@@ -211,7 +211,7 @@ public class TicketServiceImpl implements TickerService {
 
 	@Override
 	public TicketResponse viewTicket(String ticketId) {
-		// TODO Auto-generated method stub
+
 		return ticketRepository.findById(ticketId).map(ticket -> {
 			TicketResponse response = new TicketResponse();
 			response.setTicketId(ticket.getTicketId());
@@ -264,7 +264,7 @@ public class TicketServiceImpl implements TickerService {
 
 	  @Override
 	  public List<TicketResponse> getAgentAllotedTickets(String agentId) {
-		// TODO Auto-generated method stub
+	
 		  return ticketRepository.findByAssignedAgentId(agentId);
 	  }
 	  public List<TicketResponse> getAgentResolvedTickets(String agentId) {

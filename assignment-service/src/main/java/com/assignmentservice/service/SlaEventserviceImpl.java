@@ -40,7 +40,7 @@ public class SlaEventserviceImpl implements SlaEventService{
 
 	@Override
 	public List<SlaEventResponse> getEventsByAgent(String agentId) {
-		// TODO Auto-generated method stub
+	
 		  return eventRepository.findByAgentId(agentId) .stream()	
 		            .map(this::toResponse)
 		            .toList();

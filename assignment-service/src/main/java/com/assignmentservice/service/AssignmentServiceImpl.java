@@ -87,7 +87,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	@Override
 	public List<AgentWorkLoadResponse> getAgentWorkload(String agentId) {
-		// TODO Auto-generated method stub
+
 		return assignmentRepo.countByStatus(agentId).stream()
 				.map(r -> new AgentWorkLoadResponse(r[0].toString(), (Long) r[1])).toList();
 	}
@@ -103,7 +103,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 	@Override
 	@Transactional
 	public String reassign(String assignedBy, ReAssignment request) {
-		// TODO Auto-generated method stub
+
 		Assignment oldAssignment = assignmentRepo.findAllByTicketIdOrderByAssignedAtDesc(request.getTicketId())
 		        .stream()
 		        .findFirst()
