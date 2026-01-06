@@ -9,8 +9,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import com.ticker_service.config.RabbitConfig;
-import com.ticker_service.dto.NotificationEvent;
+import com.tickerservice.config.RabbitConfig;
+import com.tickerservice.dto.NotificationEvent;
+import com.tickerservice.service.NotificationPublisher;
 
 class NotificationPublisherTest {
 

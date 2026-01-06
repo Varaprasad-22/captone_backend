@@ -10,11 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.notificationService.Listener.NotificationListener;
-import com.notificationService.dto.NotificationEvent;
-import com.notificationService.model.Notification;
-import com.notificationService.repository.NotificationRepository;
-import com.notificationService.service.EmailService;
+import com.notificationservice.Listener.NotificationListener;
+import com.notificationservice.dto.NotificationEvent;
+import com.notificationservice.model.Notification;
+import com.notificationservice.repository.NotificationRepository;
+import com.notificationservice.service.EmailService;
 
 class NotificationListenerTest {
 

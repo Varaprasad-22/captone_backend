@@ -16,14 +16,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ticker_service.client.AssignmentClient;
-import com.ticker_service.client.AuthClient;
-import com.ticker_service.dto.*;
-import com.ticker_service.exceptions.TicketNotFoundException;
-import com.ticker_service.model.*;
-import com.ticker_service.repository.AttachmentRepository;
-import com.ticker_service.repository.CommentRepository;
-import com.ticker_service.repository.TicketRepository;
+import com.tickerservice.client.AssignmentClient;
+import com.tickerservice.client.AuthClient;
+import com.tickerservice.dto.*;
+import com.tickerservice.exceptions.TicketNotFoundException;
+import com.tickerservice.model.*;
+import com.tickerservice.repository.AttachmentRepository;
+import com.tickerservice.repository.CommentRepository;
+import com.tickerservice.repository.TicketRepository;
+import com.tickerservice.service.FileStorageService;
+import com.tickerservice.service.NotificationPublisher;
+import com.tickerservice.service.TicketServiceImpl;
 
 class TicketServiceImplTest {
 

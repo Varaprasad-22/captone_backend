@@ -11,6 +11,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import com.notificationservice.service.EmailService;
+
 class EmailServiceTest {
 
     @Mock

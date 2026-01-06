@@ -13,9 +13,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ticker_service.exceptions.GlobalExceptionHandler;
-import com.ticker_service.exceptions.InvalidTicketstateException;
-import com.ticker_service.exceptions.TicketNotFoundException;
+import com.tickerservice.exceptions.GlobalExceptionHandler;
+import com.tickerservice.exceptions.InvalidTicketstateException;
+import com.tickerservice.exceptions.TicketNotFoundException;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

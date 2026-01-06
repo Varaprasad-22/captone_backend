@@ -22,10 +22,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ticker_service.dto.*;
-import com.ticker_service.model.TicketCategory;
-import com.ticker_service.model.TicketStatus;
-import com.ticker_service.service.TickerService;
+import com.tickerservice.controller.TicketController;
+import com.tickerservice.dto.*;
+import com.tickerservice.model.TicketCategory;
+import com.tickerservice.model.TicketStatus;
+import com.tickerservice.service.TickerService;
 
 class TicketControllerTest {
 
