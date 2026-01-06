@@ -1,11 +1,11 @@
-package com.apiGateway.config;
+package com.apigateway.config;
 
 
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.apiGateway.security.JwtAuthenticationFilter;
+import com.apigateway.security.JwtAuthenticationFilter;
 
 @Configuration
 public class GatewayFilterConfig {

@@ -1,4 +1,4 @@
-package com.apiGateway.security;
+package com.apigateway.security;
 
 
 public final class Roles {

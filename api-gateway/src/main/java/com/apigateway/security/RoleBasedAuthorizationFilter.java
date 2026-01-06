@@ -1,5 +1,7 @@
-package com.apiGateway.security;
+package com.apigateway.security;
 
+
+import static com.apigateway.security.Roles.*;
 
 import java.util.List;
 import java.util.Map;
@@ -14,8 +16,6 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.web.server.ServerWebExchange;
-
-import static com.apiGateway.security.Roles.*;
 @Component
 public class RoleBasedAuthorizationFilter {
 
