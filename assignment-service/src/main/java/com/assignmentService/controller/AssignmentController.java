@@ -2,7 +2,6 @@ package com.assignmentService.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,15 +21,16 @@ import com.assignmentService.service.AssignmentService;
 import com.assignmentService.service.SlaService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/assignments")
+@RequiredArgsConstructor
 public class AssignmentController {
 	
-	@Autowired
-	private AssignmentService assignmentService;
-	@Autowired
-	private SlaService slaService;
+	private final AssignmentService assignmentService;
+	
+	private final SlaService slaService;
 
 	@PostMapping("/assign")
 	public ResponseEntity<String> assignTicket(@RequestHeader("X-USER-ID") String assignedBy,

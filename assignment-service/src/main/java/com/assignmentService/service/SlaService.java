@@ -8,7 +8,6 @@ import com.assignmentService.model.Assignment;
 import com.assignmentService.model.Sla;
 import com.assignmentService.model.SlaEvent;
 import com.assignmentService.model.SlaRule;
-import com.assignmentService.model.SlaStatus;
 import com.assignmentService.model.TicketStatus;
 import com.assignmentService.repositories.AssignmentRepository;
 import com.assignmentService.repositories.SlaEventRepository;

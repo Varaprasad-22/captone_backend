@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.assignmentService.dto.SlaEventResponse;
-import com.assignmentService.model.SlaEvent;
 
 public interface SlaEventService {
 

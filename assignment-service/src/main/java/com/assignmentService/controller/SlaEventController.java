@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.assignmentService.dto.SlaEventResponse;
-import com.assignmentService.model.SlaEvent;
 import com.assignmentService.service.SlaEventService;
 
 import lombok.RequiredArgsConstructor;

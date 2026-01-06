@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.assignmentService.client.AuthClient;
@@ -22,29 +21,28 @@ import com.assignmentService.exception.AssignmentAlreadyExistsException;
 import com.assignmentService.exception.AssignmentNotFoundException;
 import com.assignmentService.model.Assignment;
 import com.assignmentService.model.Priority;
-import com.assignmentService.model.Sla;
 import com.assignmentService.model.SlaStatus;
 import com.assignmentService.repositories.AssignmentRepository;
 import com.assignmentService.repositories.SlaRepository;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AssignmentServiceImpl implements AssignmentService {
 
-	@Autowired
-	private AssignmentRepository assignmentRepo;
-	@Autowired
-	private SlaService slaService;
-	@Autowired
-	private AuthClient authClient;
-	@Autowired
-	private NotificationPublisher publisher;
-	@Autowired
-	private TicketClient ticketClient;
-	@Autowired
-	private SlaRepository slaRepo;
+	private final AssignmentRepository assignmentRepo;
+
+	private final SlaService slaService;
+
+	private final AuthClient authClient;
+
+	private final NotificationPublisher publisher;
+
+	private final TicketClient ticketClient;
+
+	private final SlaRepository slaRepo;
 
 	@Transactional
 	public String assign(AssignmentRequest req, String assignedBy) {
