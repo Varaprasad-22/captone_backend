@@ -287,4 +287,105 @@ class AuthServiceImplTest {
 	    verify(userRepository).findAll();
 	}
 
+	@Test
+	void updateUserRole_userNotFound() {
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.empty());
+
+	    assertThrows(
+	            UserNotFoundException.class,
+	            () -> authService.updateUserRole("U1", Erole.ROLE_AGENT)
+	    );
+
+	    verify(userRepository).findById("U1");
+	    verifyNoMoreInteractions(userRepository);
+	}
+
+	@Test
+	void updateUserRole_sameRole_shouldFail() {
+
+	    Role agentRole = new Role();
+	    agentRole.setName(Erole.ROLE_AGENT);
+
+	    Users user = new Users();
+	    user.setUserId("U1");
+	    user.setRole(agentRole);
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.of(user));
+
+	    when(roleRepository.findByName(Erole.ROLE_AGENT))
+	            .thenReturn(Optional.of(agentRole));
+
+	    IllegalStateException ex = assertThrows(
+	            IllegalStateException.class,
+	            () -> authService.updateUserRole("U1", Erole.ROLE_AGENT)
+	    );
+
+	    assertEquals("User already has this role", ex.getMessage());
+	}
+
+	@Test
+	void updateUserRole_roleNotFound() {
+
+	    Role userRole = new Role();
+	    userRole.setName(Erole.ROLE_USER);
+
+	    Users user = new Users();
+	    user.setUserId("U1");
+	    user.setRole(userRole);
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.of(user));
+
+	    when(roleRepository.findByName(Erole.ROLE_AGENT))
+	            .thenReturn(Optional.empty());
+
+	    assertThrows(
+	            RoleNotFoundException.class,
+	            () -> authService.updateUserRole("U1", Erole.ROLE_AGENT)
+	    );
+	}
+	@Test
+	void updateUserRole_assignAdminRole_shouldFail() {
+
+	    Role userRole = new Role();
+	    userRole.setName(Erole.ROLE_USER);
+
+	    Users user = new Users();
+	    user.setUserId("U1");
+	    user.setRole(userRole);
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.of(user));
+
+	    CannotCreateRoleException ex = assertThrows(
+	            CannotCreateRoleException.class,
+	            () -> authService.updateUserRole("U1", Erole.ROLE_ADMIN)
+	    );
+
+	    assertEquals("Cannot assign ADMIN role", ex.getMessage());
+	}
+	@Test
+	void updateUserRole_existingUserIsAdmin_shouldFail() {
+
+	    Role adminRole = new Role();
+	    adminRole.setName(Erole.ROLE_ADMIN);
+
+	    Users adminUser = new Users();
+	    adminUser.setUserId("U1");
+	    adminUser.setRole(adminRole);
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.of(adminUser));
+
+	    CannotCreateRoleException ex = assertThrows(
+	            CannotCreateRoleException.class,
+	            () -> authService.updateUserRole("U1", Erole.ROLE_AGENT)
+	    );
+
+	    assertEquals("Cannot modify ADMIN role", ex.getMessage());
+	}
+
 }
