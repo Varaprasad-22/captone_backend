@@ -1,6 +1,5 @@
 package com.assignmentService.repositories;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,9 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.assignmentService.dto.AgentWorkLoadResponse;
 import com.assignmentService.model.Assignment;
-import com.assignmentService.model.Sla;
 
 @Repository
 public interface AssignmentRepository extends JpaRepository<Assignment, String> {

@@ -1,6 +1,5 @@
 package com.auth_service.dto;
 
-import com.auth_service.model.Erole;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -2,7 +2,6 @@ package com.auth_service.service;
 
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 
 import com.auth_service.dto.AdminCreationRequest;
@@ -12,7 +11,6 @@ import com.auth_service.dto.LoginResponse;
 import com.auth_service.dto.RegisterRequest;
 import com.auth_service.dto.UserInfoResponse;
 import com.auth_service.model.Erole;
-import com.auth_service.model.Users;
 
 public interface AuthService {
 	void register(RegisterRequest request);

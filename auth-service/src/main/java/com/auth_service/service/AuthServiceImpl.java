@@ -3,7 +3,6 @@ package com.auth_service.service;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,17 +30,20 @@ import com.auth_service.repository.RoleRepository;
 import com.auth_service.repository.UserRepository;
 import com.auth_service.security.JwtUtil;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-	@Autowired
+	
 	private UserRepository userRepository;
-	@Autowired
+	
 	private RoleRepository roleRepository;
-	@Autowired
+	
 	private PasswordEncoder passwordEncoder;
-	@Autowired
+	
 	private JwtUtil jwtutils;
-	@Autowired
+
 	private NotificationPublisher publisher;
 
 	public void register(RegisterRequest request) {

@@ -2,8 +2,6 @@ package com.assignmentService.dto;
 
 import com.assignmentService.model.Priority;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;

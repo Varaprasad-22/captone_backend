@@ -2,7 +2,6 @@ package com.assignmentService.dto;
 
 import java.time.LocalDateTime;
 
-import com.assignmentService.model.SlaEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
