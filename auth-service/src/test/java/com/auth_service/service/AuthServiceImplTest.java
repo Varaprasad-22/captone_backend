@@ -507,4 +507,36 @@ class AuthServiceImplTest {
 	        verify(userRepository, never()).save(any());
 	        verify(roleRepository, never()).findByName(any());
 	    }
+
+	 @Test
+	 void login_shouldThrowUserDisabledException_whenUserIsInactive() {
+
+	     LoginRequest request = new LoginRequest();
+	     request.setEmail("user@test.com");
+	     request.setPassword("password123");
+
+	     Users user = new Users();
+	     user.setUserId("U1");
+	     user.setEmail("user@test.com");
+	     user.setPassword("encoded-password");
+	     user.setActive(false); 
+	     user.setName("User");
+
+	     Role role = new Role();
+	     role.setName(Erole.ROLE_USER);
+	     user.setRole(role);
+
+	     when(userRepository.findByEmail("user@test.com"))
+	             .thenReturn(Optional.of(user));
+
+	     when(passwordEncoder.matches("password123", "encoded-password"))
+	             .thenReturn(true);
+	     assertThrows(
+	             UserDisabledException.class,
+	             () -> authService.login(request)
+	     );
+	     verify(jwtUtil, never()).generateToken(any(), any(), any(), any());
+	 }
+
 }
+
