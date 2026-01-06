@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -30,17 +29,17 @@ import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.dto.UpdateTicketStatusRequest;
 import com.ticker_service.dto.UserDashboardResponse;
-import com.ticker_service.model.Comment;
 import com.ticker_service.service.TickerService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/tickets")
+@RequiredArgsConstructor
 public class TicketController {
 
-	@Autowired
-	private TickerService ticketService;
+	private final TickerService ticketService;
 
 	// this is one for creating ticket where we send userid from token or other ways
 	@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

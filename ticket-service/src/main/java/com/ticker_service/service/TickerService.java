@@ -2,7 +2,6 @@ package com.ticker_service.service;
 
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.dto.AttachmentResponse;
@@ -11,7 +10,6 @@ import com.ticker_service.dto.CreateTicketRequest;
 import com.ticker_service.dto.TicketResponse;
 import com.ticker_service.dto.UpdateAssignedAgent;
 import com.ticker_service.dto.UserDashboardResponse;
-import com.ticker_service.model.Comment;
 import com.ticker_service.model.TicketStatus;
 
 import jakarta.validation.Valid;

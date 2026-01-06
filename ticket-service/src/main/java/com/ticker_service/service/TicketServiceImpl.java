@@ -33,24 +33,25 @@ import com.ticker_service.repository.CommentRepository;
 import com.ticker_service.repository.TicketRepository;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class TicketServiceImpl implements TickerService {
 
-	@Autowired
-	private TicketRepository ticketRepository;
-	@Autowired
-	private FileStorageService fileStorageService;
-	@Autowired
-	private AttachmentRepository attachmentRepository;
-	@Autowired
-	private NotificationPublisher publisher;
-	@Autowired
-	private AssignmentClient assignmentClient;
-	@Autowired
-	private CommentRepository commentRepo;
-	@Autowired
-	private AuthClient authClient;
+	private final TicketRepository ticketRepository;
+	
+	private final FileStorageService fileStorageService;
+	
+	private final AttachmentRepository attachmentRepository;
+
+	private final NotificationPublisher publisher;
+
+	private final AssignmentClient assignmentClient;
+	
+	private final CommentRepository commentRepo;
+
+	private final AuthClient authClient;
 
 	@Override
 	public String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId,
