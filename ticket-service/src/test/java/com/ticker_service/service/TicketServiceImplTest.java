@@ -1,6 +1,5 @@
 package com.ticker_service.service;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -14,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ticker_service.client.AssignmentClient;
@@ -27,203 +27,239 @@ import com.ticker_service.repository.TicketRepository;
 
 class TicketServiceImplTest {
 
-    @InjectMocks
-    private TicketServiceImpl ticketService;
+	@InjectMocks
+	private TicketServiceImpl ticketService;
 
-    @Mock
-    private TicketRepository ticketRepository;
-    @Mock
-    private FileStorageService fileStorageService;
-    @Mock
-    private AttachmentRepository attachmentRepository;
-    @Mock
-    private NotificationPublisher publisher;
-    @Mock
-    private AssignmentClient assignmentClient;
-    @Mock
-    private CommentRepository commentRepository;
-    @Mock
-    private AuthClient authClient;
+	@Mock
+	private TicketRepository ticketRepository;
+	@Mock
+	private FileStorageService fileStorageService;
+	@Mock
+	private AttachmentRepository attachmentRepository;
+	@Mock
+	private NotificationPublisher publisher;
+	@Mock
+	private AssignmentClient assignmentClient;
+	@Mock
+	private CommentRepository commentRepository;
+	@Mock
+	private AuthClient authClient;
 
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@BeforeEach
+	void setup() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
-    void createTicket_success() {
+	@Test
+	void createTicket_success() {
 
-        CreateTicketRequest request = new CreateTicketRequest(
-                "Login issue",
-                "Unable to login into system",
-                TicketCategory.SOFTWARE
-        );
+		CreateTicketRequest request = new CreateTicketRequest("Login issue", "Unable to login into system",
+				TicketCategory.SOFTWARE);
 
-        Ticket savedTicket = new Ticket();
-        savedTicket.setTicketId("T123");
-        savedTicket.setTitle(request.getTitle());
+		Ticket savedTicket = new Ticket();
+		savedTicket.setTicketId("T123");
+		savedTicket.setTitle(request.getTitle());
 
-        when(ticketRepository.save(any(Ticket.class))).thenReturn(savedTicket);
+		when(ticketRepository.save(any(Ticket.class))).thenReturn(savedTicket);
 
-        String result = ticketService.createTicket(
-                request,
-                null,
-                "user1",
-                "user@test.com"
-        );
+		String result = ticketService.createTicket(request, null, "user1", "user@test.com");
 
-        assertTrue(result.contains("Ticket Created"));
-        verify(ticketRepository).save(any(Ticket.class));
-        verify(publisher).publish(any(NotificationEvent.class), eq("ticket.created"));
-    }
+		assertTrue(result.contains("Ticket Created"));
+		verify(ticketRepository).save(any(Ticket.class));
+		verify(publisher).publish(any(NotificationEvent.class), eq("ticket.created"));
+	}
 
-    @Test
-    void updateStatus_success() {
+	@Test
+	void updateStatus_success() {
 
-        Ticket ticket = new Ticket();
-        ticket.setTicketId("T1");
-        ticket.setCreatedByUserId("user1");
-        ticket.setTitle("Issue");
+		Ticket ticket = new Ticket();
+		ticket.setTicketId("T1");
+		ticket.setCreatedByUserId("user1");
+		ticket.setTitle("Issue");
 
-        when(ticketRepository.findById("T1")).thenReturn(Optional.of(ticket));
-        when(authClient.getByUserId("user1"))
-                .thenReturn(new UserInfoResponse(  "user1",
-                        "user@test.com",
-                        "Test User",
-                        true,
-                        "ROLE_USER"));
+		when(ticketRepository.findById("T1")).thenReturn(Optional.of(ticket));
+		when(authClient.getByUserId("user1"))
+				.thenReturn(new UserInfoResponse("user1", "user@test.com", "Test User", true, "ROLE_USER"));
 
-        ticketService.updateStatus("T1", TicketStatus.RESOLVED);
+		ticketService.updateStatus("T1", TicketStatus.RESOLVED);
 
-        verify(ticketRepository).save(ticket);
-        verify(publisher).publish(any(NotificationEvent.class), eq("ticket.Updates"));
-    }
+		verify(ticketRepository).save(ticket);
+		verify(publisher).publish(any(NotificationEvent.class), eq("ticket.Updates"));
+	}
 
-    @Test
-    void updateStatus_ticketNotFound() {
+	@Test
+	void updateStatus_ticketNotFound() {
 
-        when(ticketRepository.findById("T1")).thenReturn(Optional.empty());
+		when(ticketRepository.findById("T1")).thenReturn(Optional.empty());
 
-        assertThrows(
-                TicketNotFoundException.class,
-                () -> ticketService.updateStatus("T1", TicketStatus.OPEN)
-        );
-    }
+		assertThrows(TicketNotFoundException.class, () -> ticketService.updateStatus("T1", TicketStatus.OPEN));
+	}
 
-    @Test
-    void getAllOpenTickets_success() {
+	@Test
+	void getAllOpenTickets_success() {
 
-        when(ticketRepository.findByStatus(TicketStatus.OPEN))
-                .thenReturn(List.of(new TicketResponse()));
+		when(ticketRepository.findByStatus(TicketStatus.OPEN)).thenReturn(List.of(new TicketResponse()));
 
-        List<TicketResponse> result = ticketService.getAllOpenTickets();
+		List<TicketResponse> result = ticketService.getAllOpenTickets();
 
-        assertEquals(1, result.size());
-    }
+		assertEquals(1, result.size());
+	}
 
-    @Test
-    void getPerUserTickets_success() {
+	@Test
+	void getPerUserTickets_success() {
 
-        when(ticketRepository.findByCreatedByUserId("user1"))
-                .thenReturn(List.of(new TicketResponse()));
+		when(ticketRepository.findByCreatedByUserId("user1")).thenReturn(List.of(new TicketResponse()));
 
-        List<TicketResponse> tickets = ticketService.getPerUserTickets("user1");
+		List<TicketResponse> tickets = ticketService.getPerUserTickets("user1");
 
-        assertFalse(tickets.isEmpty());
-    }
-    @Test
-    void updateAgentId_success() {
+		assertFalse(tickets.isEmpty());
+	}
 
-        Ticket ticket = new Ticket();
-        ticket.setTicketId("T1");
+	@Test
+	void updateAgentId_success() {
 
-        when(ticketRepository.findById("T1"))
-                .thenReturn(Optional.of(ticket));
+		Ticket ticket = new Ticket();
+		ticket.setTicketId("T1");
 
-        UpdateAssignedAgent request = new UpdateAssignedAgent();
-        request.setAgentId("agent1");
-        request.setPriority(Priority.HIGH);
+		when(ticketRepository.findById("T1")).thenReturn(Optional.of(ticket));
 
-        ticketService.updateAgentId("T1", request);
+		UpdateAssignedAgent request = new UpdateAssignedAgent();
+		request.setAgentId("agent1");
+		request.setPriority(Priority.HIGH);
 
-        assertEquals("agent1", ticket.getAssignedAgentId());
-        assertEquals(TicketStatus.ASSIGNED, ticket.getStatus());
-        verify(ticketRepository).save(ticket);
-    }
-    @Test
-    void addComment_success() {
+		ticketService.updateAgentId("T1", request);
 
-        Ticket ticket = new Ticket();
-        ticket.setTicketId("T1");
+		assertEquals("agent1", ticket.getAssignedAgentId());
+		assertEquals(TicketStatus.ASSIGNED, ticket.getStatus());
+		verify(ticketRepository).save(ticket);
+	}
 
-        when(ticketRepository.findById("T1"))
-                .thenReturn(Optional.of(ticket));
+	@Test
+	void addComment_success() {
 
-        ticketService.addComment("T1", "user1", "test comment", false);
+		Ticket ticket = new Ticket();
+		ticket.setTicketId("T1");
 
-        verify(commentRepository).save(any(Comment.class));
-    }
+		when(ticketRepository.findById("T1")).thenReturn(Optional.of(ticket));
 
-    @Test
-    void getComments_success() {
+		ticketService.addComment("T1", "user1", "test comment", false);
 
-        Comment comment = new Comment();
-        comment.setCommentId("C1");
-        comment.setText("Hello");
+		verify(commentRepository).save(any(Comment.class));
+	}
 
-        when(commentRepository.findAllByTicketId("T1"))
-                .thenReturn(List.of(comment));
+	@Test
+	void getComments_success() {
 
-        List<CommentResponse> result = ticketService.getComments("T1");
+		Comment comment = new Comment();
+		comment.setCommentId("C1");
+		comment.setText("Hello");
 
-        assertEquals(1, result.size());
-        assertEquals("Hello", result.get(0).getText());
-    }
+		when(commentRepository.findAllByTicketId("T1")).thenReturn(List.of(comment));
 
-    @Test
-    void viewTicket_success() {
+		List<CommentResponse> result = ticketService.getComments("T1");
 
-        Ticket ticket = new Ticket();
-        ticket.setTicketId("T1");
-        ticket.setTitle("Issue");
+		assertEquals(1, result.size());
+		assertEquals("Hello", result.get(0).getText());
+	}
 
-        when(ticketRepository.findById("T1"))
-                .thenReturn(Optional.of(ticket));
+	@Test
+	void viewTicket_success() {
 
-        TicketResponse response = ticketService.viewTicket("T1");
+		Ticket ticket = new Ticket();
+		ticket.setTicketId("T1");
+		ticket.setTitle("Issue");
 
-        assertNotNull(response);
-        assertEquals("T1", response.getTicketId());
-    }
+		when(ticketRepository.findById("T1")).thenReturn(Optional.of(ticket));
 
-    @Test
-    void getUserDashboard_success() {
+		TicketResponse response = ticketService.viewTicket("T1");
 
-        when(ticketRepository.countByCreatedByUserId("user1")).thenReturn(10L);
-        when(ticketRepository.countByCreatedByUserIdAndStatus("user1", TicketStatus.OPEN)).thenReturn(3L);
-        when(ticketRepository.countByCreatedByUserIdAndStatus("user1", TicketStatus.INPROGRESS)).thenReturn(2L);
-        when(ticketRepository.countByCreatedByUserIdAndAssignedAgentIdIsNotNull("user1")).thenReturn(4L);
-        when(ticketRepository.countByCreatedByUserIdAndStatusIn(
-                eq("user1"), anyList())).thenReturn(1L);
+		assertNotNull(response);
+		assertEquals("T1", response.getTicketId());
+	}
 
-        UserDashboardResponse dashboard = ticketService.getUserDashboard("user1");
+	@Test
+	void getUserDashboard_success() {
 
-        assertEquals(10, dashboard.getTotal());
-        assertEquals(3, dashboard.getOpen());
-        assertEquals(2, dashboard.getInProgress());
-        assertEquals(4, dashboard.getAssigned());
-        assertEquals(1, dashboard.getClosed());
-    }
-    
-    @Test
-    void getAgentAllotedTickets_success() {
+		when(ticketRepository.countByCreatedByUserId("user1")).thenReturn(10L);
+		when(ticketRepository.countByCreatedByUserIdAndStatus("user1", TicketStatus.OPEN)).thenReturn(3L);
+		when(ticketRepository.countByCreatedByUserIdAndStatus("user1", TicketStatus.INPROGRESS)).thenReturn(2L);
+		when(ticketRepository.countByCreatedByUserIdAndAssignedAgentIdIsNotNull("user1")).thenReturn(4L);
+		when(ticketRepository.countByCreatedByUserIdAndStatusIn(eq("user1"), anyList())).thenReturn(1L);
 
-        when(ticketRepository.findByAssignedAgentId("agent1"))
-                .thenReturn(List.of(new TicketResponse()));
+		UserDashboardResponse dashboard = ticketService.getUserDashboard("user1");
 
-        List<TicketResponse> tickets =
-                ticketService.getAgentAllotedTickets("agent1");
+		assertEquals(10, dashboard.getTotal());
+		assertEquals(3, dashboard.getOpen());
+		assertEquals(2, dashboard.getInProgress());
+		assertEquals(4, dashboard.getAssigned());
+		assertEquals(1, dashboard.getClosed());
+	}
 
-        assertEquals(1, tickets.size());
-    }
+	@Test
+	void getAgentAllotedTickets_success() {
+
+		when(ticketRepository.findByAssignedAgentId("agent1")).thenReturn(List.of(new TicketResponse()));
+
+		List<TicketResponse> tickets = ticketService.getAgentAllotedTickets("agent1");
+
+		assertEquals(1, tickets.size());
+	}
+
+	@Test
+	void getAgentResolvedTickets_success() {
+
+		when(ticketRepository.findByAssignedAgentIdAndStatusIn(eq("agent1"), anyList()))
+				.thenReturn(List.of(new TicketResponse()));
+
+		List<TicketResponse> tickets = ticketService.getAgentResolvedTickets("agent1");
+
+		assertEquals(1, tickets.size());
+	}
+
+	@Test
+	void getAllTickets_success() {
+
+		Ticket ticket = new Ticket();
+		ticket.setTicketId("T1");
+		ticket.setTitle("Issue");
+
+		when(ticketRepository.findAll()).thenReturn(List.of(ticket));
+
+		List<TicketResponse> responses = ticketService.getAllTickets();
+
+		assertEquals(1, responses.size());
+		assertEquals("T1", responses.get(0).getTicketId());
+	}
+	
+	@Test
+	void updateStatus_escalated_success() {
+
+	    Ticket ticket = new Ticket();
+	    ticket.setTicketId("T1");
+	    ticket.setCreatedByUserId("user1");
+	    ticket.setTitle("Issue");
+
+	    when(ticketRepository.findById("T1"))
+	            .thenReturn(Optional.of(ticket));
+
+	    UserInfoResponse user = new UserInfoResponse(
+	            "user1", "user@test.com", "User", true, "ROLE_USER"
+	    );
+
+	    UserInfoResponse manager = new UserInfoResponse(
+	            "mgr1", "manager@test.com", "Manager", true, "ROLE_MANAGER"
+	    );
+
+	    when(authClient.getByUserId("user1")).thenReturn(user);
+	    when(assignmentClient.getManagerId("T1"))
+	            .thenReturn(ResponseEntity.ok("mgr1"));
+	    when(authClient.getByUserId("mgr1")).thenReturn(manager);
+
+	    ticketService.updateStatus("T1", TicketStatus.ESCALATED);
+
+	    verify(ticketRepository).save(ticket);
+	}
+
+	
+
 }
