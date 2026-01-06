@@ -388,4 +388,85 @@ class AuthServiceImplTest {
 	    assertEquals("Cannot modify ADMIN role", ex.getMessage());
 	}
 
+	@Test
+	void activateDeactivateUser_userNotFound() {
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.empty());
+
+	    assertThrows(
+	            UserNotFoundException.class,
+	            () -> authService.activateDeactivateUser("U1", false)
+	    );
+
+	    verify(userRepository).findById("U1");
+	    verifyNoMoreInteractions(userRepository);
+	}
+
+	@Test
+	void activateDeactivateUser_adminUser_shouldFail() {
+
+	    Role adminRole = new Role();
+	    adminRole.setName(Erole.ROLE_ADMIN);
+
+	    Users admin = new Users();
+	    admin.setUserId("U1");
+	    admin.setRole(adminRole);
+	    admin.setActive(true);
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.of(admin));
+
+	    UserDisabledException ex = assertThrows(
+	            UserDisabledException.class,
+	            () -> authService.activateDeactivateUser("U1", false)
+	    );
+
+	    assertEquals("You cannot disable an user", ex.getMessage());
+	}
+
+	@Test
+	void activateDeactivateUser_alreadyActive_shouldFail() {
+
+	    Role userRole = new Role();
+	    userRole.setName(Erole.ROLE_USER);
+
+	    Users user = new Users();
+	    user.setUserId("U1");
+	    user.setRole(userRole);
+	    user.setActive(true);
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.of(user));
+
+	    UserDisabledException ex = assertThrows(
+	            UserDisabledException.class,
+	            () -> authService.activateDeactivateUser("U1", true)
+	    );
+
+	    assertEquals("User Already in Active State", ex.getMessage());
+	}
+
+	@Test
+	void activateDeactivateUser_alreadyDeactivated_shouldFail() {
+
+	    Role userRole = new Role();
+	    userRole.setName(Erole.ROLE_USER);
+
+	    Users user = new Users();
+	    user.setUserId("U1");
+	    user.setRole(userRole);
+	    user.setActive(false);
+
+	    when(userRepository.findById("U1"))
+	            .thenReturn(Optional.of(user));
+
+	    UserDisabledException ex = assertThrows(
+	            UserDisabledException.class,
+	            () -> authService.activateDeactivateUser("U1", false)
+	    );
+
+	    assertEquals("User Already  Deactivated", ex.getMessage());
+	}
+
 }
