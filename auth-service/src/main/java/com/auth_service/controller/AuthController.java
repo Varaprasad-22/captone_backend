@@ -102,4 +102,9 @@ public class AuthController {
         authService.updateUserRole(userId, request.getRole());
         return ResponseEntity.noContent().build();
     }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        return ResponseEntity.ok("Logged out successfully");
+    }
 }

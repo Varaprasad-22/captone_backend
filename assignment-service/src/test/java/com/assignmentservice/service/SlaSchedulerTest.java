@@ -1,4 +1,4 @@
-package com.assignmentService.service;
+package com.assignmentservice.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

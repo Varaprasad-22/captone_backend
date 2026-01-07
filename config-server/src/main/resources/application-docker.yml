@@ -4,13 +4,14 @@ server:
 spring:
   application:
     name: config-server
-
   cloud:
     config:
       server:
         git:
           uri: https://github.com/Varaprasad-22/Capstone_Configserver
           default-label: main
+          username: Varaprasad-22
+          password: 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
           clone-on-start: true
 
 eureka:

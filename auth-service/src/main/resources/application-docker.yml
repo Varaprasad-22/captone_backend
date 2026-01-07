@@ -1,5 +1,8 @@
 spring:
   application:
-    name: auth-service
+    name: assignment-service
   config:
-    import: configserver:http://config-server:8888
+    import: "configserver:http://config-server:8888"
+  cloud:
+    config:
+      fail-fast: true

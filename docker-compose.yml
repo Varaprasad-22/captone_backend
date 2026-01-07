@@ -6,36 +6,55 @@ services:
     build: ./eureka-server
     ports:
       - "9090:9090"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9090/eureka/apps"]
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - app-network
 
   config-server:
     build: ./config-server
     ports:
       - "8888:8888"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:9090/eureka/
     depends_on:
       eureka-server:
         condition: service_healthy
-    volumes:
-      - config_git:/tmp/config-repo
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - app-network
+
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
 
   mysql:
     image: mysql:8.0
-    container_name: mysql
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DEFAULT_AUTHENTICATION_PLUGIN: mysql_native_password
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: auth_db
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -43,13 +62,28 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - app-network
+
+
+  mysql-notification:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notification_db
+    volumes:
+      - mysql_notification_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
 
   mongodb:
     image: mongo:6.0
-    container_name: mongodb
-    restart: always
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -57,90 +91,130 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - app-network
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   api-gateway:
     build: ./api-gateway
-    ports:
-      - "9091:9091"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:9090/eureka/
     depends_on:
-      eureka-server:
-        condition: service_healthy
       config-server:
         condition: service_healthy
+    networks:
+      - app-network
+
 
   auth-service:
     build: ./auth-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:9090/eureka/
+      SPRING_CONFIG_LOCATION: ""
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/auth_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
     depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
       mysql:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - app-network
+
 
   ticket-service:
     build: ./ticket-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      SPRING_CONFIG_LOCATION: ""
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:9090/eureka/
+
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/ticketSystem
+
     depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
       mongodb:
         condition: service_healthy
-      rabbitmq:
+      config-server:
         condition: service_healthy
+    networks:
+      - app-network
+
 
   assignment-service:
     build: ./assignment-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      SPRING_CONFIG_LOCATION: ""
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:9090/eureka/
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ticket_assignment_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
     depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
       mysql:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - app-network
 
   notification-service:
     build: ./notification-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:9090/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-notification:3306/notification_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
     depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      mysql:
+      mysql-notification:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
+  mysql_notification_data:
   mongo_data:
-  rabbitmq_data:
-  config_git:
+
+
+networks:
+  app-network:
+    driver: bridge

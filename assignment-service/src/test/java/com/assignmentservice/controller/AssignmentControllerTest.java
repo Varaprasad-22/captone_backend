@@ -1,4 +1,4 @@
-package com.assignmentService.controller;
+package com.assignmentservice.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
