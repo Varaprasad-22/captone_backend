@@ -25,6 +25,7 @@ import com.assignmentservice.model.SlaStatus;
 import com.assignmentservice.repositories.AssignmentRepository;
 import com.assignmentservice.repositories.SlaRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +45,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	private final SlaRepository slaRepo;
 
+	@CircuitBreaker(name = "assignment-service",fallbackMethod = "assignFallback")
 	@Transactional
 	public String assign(AssignmentRequest req, String assignedBy) {
 
@@ -84,7 +86,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 		return assign.getAssignmentId();
 	}
-
+	public String assignFallback(AssignmentRequest req,String assignedBy,Throwable ex	) {
+	    throw new RuntimeException(
+	        "Assignment service temporarily unavailable. Please try again later."
+	    );
+	}
 	@Override
 	public List<AgentWorkLoadResponse> getAgentWorkload(String agentId) {
 
@@ -100,6 +106,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 		)).toList();
 	}
 
+	@CircuitBreaker(name = "assignment-service",fallbackMethod = "reassignFallback")
 	@Override
 	@Transactional
 	public String reassign(String assignedBy, ReAssignment request) {
@@ -127,6 +134,11 @@ public class AssignmentServiceImpl implements AssignmentService {
 				new UpdateAssignedAgent(saved.getAgentId(), saved.getPriority()));
 		slaService.createSla(newAssignment);
 		return newAssignment.getAssignmentId();
+	}
+	public String reassignFallback(String assignedBy,ReAssignment request,Throwable ex) {
+	    throw new RuntimeException(
+	        "Reassignment failed temporarily. Please try again later."
+	    );
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tickerservice.client.AssignmentClient;
@@ -31,6 +32,7 @@ import com.tickerservice.repository.AttachmentRepository;
 import com.tickerservice.repository.CommentRepository;
 import com.tickerservice.repository.TicketRepository;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -53,6 +55,7 @@ public class TicketServiceImpl implements TickerService {
 	private final AuthClient authClient;
 
 	@Override
+	@CircuitBreaker( name = "ticket-service", fallbackMethod = "createTicketFallback")
 	public String createTicket(@Valid CreateTicketRequest request, List<MultipartFile> files, String userId,
 			String userEmail) {
 		Ticket ticket = new Ticket();
@@ -94,7 +97,12 @@ public class TicketServiceImpl implements TickerService {
 		return "Ticket Created Succesfully" + saved.getTicketId();
 	}
 
+	public String createTicketFallback(CreateTicketRequest request, List<MultipartFile> files, String userId,
+	        String userEmail,Throwable ex) {
+	    throw new RuntimeException("Ticket service temporarily unavailable. Please try again later.");
+	}
 	@Override
+	@Transactional
 	public void updateStatus(String ticketId, TicketStatus status) {
 		
 		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
@@ -146,6 +154,7 @@ public class TicketServiceImpl implements TickerService {
 	}
 
 	@Override
+	@CircuitBreaker(name = "ticket-service",fallbackMethod = "getAllTicketsFallback")
 	public List<TicketResponse> getAllTickets() {
 
 		return ticketRepository.findAll().stream().map(ticket -> {
@@ -164,7 +173,9 @@ public class TicketServiceImpl implements TickerService {
 			return response;
 		}).toList();
 	}
-
+	public List<TicketResponse> getAllTicketsFallback(Throwable ex) {
+	    return List.of();
+	}
 	@Override
 	public void updateAgentId(String ticketId, @Valid UpdateAssignedAgent request) {
 
@@ -194,6 +205,7 @@ public class TicketServiceImpl implements TickerService {
 	}
 
 	@Override
+	@CircuitBreaker(name = "ticket-service",fallbackMethod = "getCommentsFallback")
 	public List<CommentResponse> getComments(String ticketId) {
 	
 		return commentRepo.findAllByTicketId(ticketId).stream().map(comment->{
@@ -207,6 +219,9 @@ public class TicketServiceImpl implements TickerService {
 				return response;
 				}
 				).toList();
+	}
+	public List<CommentResponse> getCommentsFallback(String ticketId, Throwable ex) {
+	    return List.of(); 
 	}
 
 	@Override

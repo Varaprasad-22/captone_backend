@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.assignmentservice.dto.UserInfoResponse;
 
-@FeignClient(name = "auth-service", url = "http://localhost:9092")
+@FeignClient(name = "auth-service", url = "${auth.service.url}")
 public interface AuthClient {
 
 	@GetMapping("/auth/getEmail/{userId}")

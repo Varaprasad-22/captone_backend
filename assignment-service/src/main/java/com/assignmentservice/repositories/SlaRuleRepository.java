@@ -12,4 +12,6 @@ import com.assignmentservice.model.SlaRule;
 public interface SlaRuleRepository extends JpaRepository<SlaRule, Long> {
 
 	Optional<SlaRule> findByPriorityAndActiveTrue(Priority priority);
+
+	Optional<SlaRule> findByPriority(Priority priority);
 }

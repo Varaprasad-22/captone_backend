@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.assignmentservice.dto.SlaEventResponse;
+import com.assignmentservice.dto.SlaRulesResponse;
 
 public interface SlaEventService {
 
@@ -15,4 +16,6 @@ public interface SlaEventService {
             String direction
     );
     List<SlaEventResponse> getEventsByAgent(String agentId);
+	List<SlaRulesResponse> getSlaRules();
+	void updateSlaRules(List<SlaRulesResponse> ruleDtos);
 }

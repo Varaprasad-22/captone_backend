@@ -10,7 +10,7 @@ import com.assignmentservice.dto.UpdateTicketStatusRequest;
 
 import jakarta.validation.Valid;
 
-@FeignClient(name = "ticket-service", url = "http://localhost:9093")
+@FeignClient(name = "ticket-service", url = "${ticket.service.url}")
 public interface TicketClient {
 
 	@PutMapping("/tickets/{ticketId}/status")

@@ -2,22 +2,45 @@ pipeline {
     agent any
 
     tools {
-        // Install the Maven version configured as "M3" and add it to the path.
+        // Maven configured in Jenkins as "M3"
         maven "M3"
     }
- environment {
+
+    environment {
         SONAR_TOKEN = credentials('sonar-token')
     }
+
     stages {
+
+        stage('Checkout') {
+            steps {
+                // Clean workspace to avoid corrupted git state
+                deleteDir()
+
+                // Retry checkout in case of network glitch
+                retry(3) {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [
+                            // Shallow clone prevents large fetch failures
+                            [$class: 'CloneOption', depth: 1, shallow: true, noTags: false]
+                        ],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/Varaprasad-22/captone_backend.git'
+                        ]]
+                    ])
+                }
+            }
+        }
+
         stage('Build') {
-    steps {
-        git branch: 'main', url: 'https://github.com/Varaprasad-22/captone_backend.git'
-                bat "mvn -Dmaven.test.failure.ignore=true package"
-
-                bat "docker compose down --remove-orphans"
-    }
-}
-        
-
+            steps {
+                bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                   bat "docker compose down --remove-orphans"
+                       bat "docker compose up --build -d"
+            }
+        }
     }
 }

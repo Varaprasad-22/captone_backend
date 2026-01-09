@@ -9,8 +9,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.assignmentservice.dto.SlaEventResponse;
+import com.assignmentservice.dto.SlaRulesResponse;
 import com.assignmentservice.model.SlaEvent;
+import com.assignmentservice.model.SlaRule;
 import com.assignmentservice.repositories.SlaEventRepository;
+import com.assignmentservice.repositories.SlaRuleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class SlaEventserviceImpl implements SlaEventService{
 	
 	private final SlaEventRepository eventRepository;
+	private final SlaRuleRepository ruleRepository;
 
 	@Override
     public Page<SlaEventResponse> getAllEvents(
@@ -57,4 +61,29 @@ public class SlaEventserviceImpl implements SlaEventService{
 	        );
 	    }
 
+	 @Override
+	 public List<SlaRulesResponse> getSlaRules() {
+		return ruleRepository.findAll().stream()
+				.map(rule->new SlaRulesResponse(
+						rule.getPriority(),
+						rule.getResponseMinutes(),
+						rule.getResolutionHours(),
+						rule.isActive()
+						)).toList();
+	 }
+
+	 @Override
+	 public void updateSlaRules(List<SlaRulesResponse> ruleDtos) {
+	     for (SlaRulesResponse dto : ruleDtos) {
+	         SlaRule existingRule = ruleRepository.findByPriority(dto.getPriority())
+	                 .orElseThrow(() -> new RuntimeException("SLA Rule not found for priority: " + dto.getPriority()));
+
+	        
+	         existingRule.setResponseMinutes(dto.getResponseMinutes());
+	         existingRule.setResolutionHours(dto.getResolutionHours());
+	         existingRule.setActive(dto.isActive());
+
+	         ruleRepository.save(existingRule);
+	     }
+	 }
 }

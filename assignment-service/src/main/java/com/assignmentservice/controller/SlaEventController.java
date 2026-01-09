@@ -6,11 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.assignmentservice.dto.SlaEventResponse;
+import com.assignmentservice.dto.SlaRulesResponse;
 import com.assignmentservice.service.SlaEventService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,5 +46,16 @@ public class SlaEventController {
 	public ResponseEntity<List<SlaEventResponse>> getAgentEvents(@PathVariable String agentId) {
 
 		return ResponseEntity.ok(slaEventService.getEventsByAgent(agentId));
+	}
+	
+	@GetMapping("/getSlaRules")
+	public ResponseEntity<List<SlaRulesResponse>> getSlaRules() {
+
+		return ResponseEntity.ok(slaEventService.getSlaRules());
+	}
+	@PutMapping("/sla-rules")
+	public ResponseEntity<String> updateSlaRules(@RequestBody List<SlaRulesResponse> ruleDtos) {
+	    slaEventService.updateSlaRules(ruleDtos);
+	    return ResponseEntity.ok("SLA Rules updated successfully");
 	}
 }

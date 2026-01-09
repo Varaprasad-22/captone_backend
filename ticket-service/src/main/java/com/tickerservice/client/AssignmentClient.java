@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.tickerservice.dto.TicketStatusUpdateRequest;
 
-@FeignClient(name = "assignment-service", url = "http://localhost:9094")
+@FeignClient(name = "assignment-service", url = "${assignment.service.url}")
 public interface AssignmentClient {
 
 	@PutMapping("/assignments/internal/sla/update-from-ticket")
