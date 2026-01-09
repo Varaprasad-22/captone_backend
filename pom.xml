@@ -12,6 +12,8 @@
   	<module>ticket-service</module>
   	<module>notification-service</module>
   	<module>config-server</module>
+  	<module>api-gateway</module>
+  	<module>assignment-service</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>
